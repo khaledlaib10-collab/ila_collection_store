@@ -1,0 +1,3024 @@
+<!DOCTYPE html>
+<!-- ILA-BUILD: colorfix-v3-no-tint -->
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- ✅ FIX: Prevent browser & Cloudflare caching old versions -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>ILA Collection — Algerian Fashion</title>
+
+<!-- ████████████████████████████████████████████████████████
+     META PIXEL BASE CODE — ILA Collection
+     Pixel ID: 868209606342878
+     Inserted in <head> per Meta official best practices
+     ████████████████████████████████████████████████████████ -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '868209606342878');
+fbq('track', 'PageView');
+</script>
+<noscript>
+  <img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=868209606342878&ev=PageView&noscript=1"/>
+</noscript>
+<!-- END META PIXEL BASE CODE -->
+
+<!-- ████████████████████████████████████████████████████████
+     META PIXEL TRACKING MODULE — ILA Collection
+     Reusable functions for all Meta Standard Events
+     Currency: DZD (Algerian Dinar)
+     All functions fail silently if fbq is unavailable
+     Duplicate-event protection via fired-flags Set
+     Now paired with server-side Conversions API (same event_id
+     is sent to both the Pixel and /api/capi so Meta deduplicates
+     the two signals into a single event).
+     ████████████████████████████████████████████████████████ -->
+<script>
+(function(){
+  'use strict';
+
+  // ── Pixel ID ──────────────────────────────────────────────
+  var PIXEL_ID = '868209606342878';
+
+  // ── Duplicate-event guard ─────────────────────────────────
+  var _fired = new Set();
+  function _key(event, id){ return event + '::' + (id || 'global'); }
+
+  // ── event_id generator (shared between Pixel + CAPI) ──────
+  function _uuid(){
+    if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c){
+      var r = Math.random()*16|0, v = c==='x' ? r : (r&0x3|0x8);
+      return v.toString(16);
+    });
+  }
+
+  // ── Server-side mirror: POST the same event to /api/capi ──
+  // Fails silently — never blocks or throws in the UI.
+  function _sendToCAPI(eventName, eventId, customData, userData){
+    try{
+      fetch('/api/capi', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          event_name: eventName,
+          event_id: eventId,
+          event_source_url: window.location.href,
+          action_source: 'website',
+          custom_data: customData || {},
+          user_data: Object.assign({
+            fbp: _getCookie('_fbp'),
+            fbc: _getCookie('_fbc')
+          }, userData || {})
+        }),
+        keepalive: true // let it finish even if the page is navigating away
+      }).catch(function(){});
+    }catch(e){ /* fail silently */ }
+  }
+
+  function _getCookie(name){
+    var m = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+    return m ? decodeURIComponent(m[1]) : undefined;
+  }
+
+  // ── Core safe dispatcher ──────────────────────────────────
+  // Fires the browser Pixel event AND the server-side CAPI event
+  // with the same event_id so Meta dedupes them.
+  function _track(type, event, params, dedupKey, userData){
+    setTimeout(function(){
+      try{
+        if(dedupKey && _fired.has(dedupKey)) return; // Duplicate guard
+        if(dedupKey) _fired.add(dedupKey);
+
+        var eventId = _uuid();
+
+        if(typeof fbq === 'function'){
+          if(type === 'track'){
+            fbq('track', event, params || {}, { eventID: eventId });
+          } else {
+            fbq('trackCustom', event, params || {}, { eventID: eventId });
+          }
+        }
+
+        // action_source is 'website' for both standard + custom events
+        _sendToCAPI(event, eventId, params, userData);
+      }catch(e){
+        // Fail silently — never break the UI
+      }
+    }, 0);
+  }
+
+  // ── Public tracking module ────────────────────────────────
+  window.ILAPixel = {
+
+    // ── PageView ────────────────────────────────────────────
+    trackPageView: function(pageName){
+      _track('track', 'PageView', {
+        content_name: pageName || document.title,
+        page_url: window.location.href
+      });
+      ['AddToCart','InitiateCheckout','ViewContent'].forEach(function(e){
+        _fired.delete(_key(e,'session'));
+      });
+    },
+
+    // ── ViewContent ─────────────────────────────────────────
+    trackViewContent: function(product){
+      if(!product) return;
+      var dedupKey = _key('ViewContent', product.id);
+      _track('track', 'ViewContent', {
+        content_ids:  [String(product.id)],
+        content_name: product.name || '',
+        content_type: 'product',
+        category:     product.cat || '',
+        value:        product.price || 0,
+        currency:     'DZD'
+      }, dedupKey);
+    },
+
+    // ── Search ──────────────────────────────────────────────
+    trackSearch: function(query){
+      if(!query) return;
+      _track('track', 'Search', {
+        search_string: query,
+        content_type:  'product',
+        page_url:      window.location.href
+      });
+    },
+
+    // ── AddToCart ───────────────────────────────────────────
+    trackAddToCart: function(product, size, qty){
+      if(!product) return;
+      var dedupKey = _key('AddToCart', product.id + '-' + (size||''));
+      _track('track', 'AddToCart', {
+        content_ids:  [String(product.id)],
+        content_name: product.name || '',
+        content_type: 'product',
+        category:     product.cat || '',
+        value:        (product.price || 0) * (qty || 1),
+        currency:     'DZD',
+        quantity:     qty || 1,
+        size:         size || ''
+      }, dedupKey);
+    },
+
+    // ── RemoveFromCart ──────────────────────────────────────
+    trackRemoveFromCart: function(product){
+      if(!product) return;
+      _track('trackCustom', 'RemoveFromCart', {
+        content_ids:  [String(product.id)],
+        content_name: product.name || '',
+        content_type: 'product',
+        value:        product.price || 0,
+        currency:     'DZD'
+      });
+    },
+
+    // ── InitiateCheckout ────────────────────────────────────
+    trackInitiateCheckout: function(cartItems, total){
+      var dedupKey = _key('InitiateCheckout', 'session');
+      _track('track', 'InitiateCheckout', {
+        content_ids:   (cartItems||[]).map(function(c){ return String(c.id); }),
+        content_type:  'product',
+        num_items:     (cartItems||[]).reduce(function(a,c){ return a+(c.qty||1); }, 0),
+        value:         total || 0,
+        currency:      'DZD'
+      }, dedupKey);
+    },
+
+    // ── Purchase ─────────────────────────────────────────────
+    // CRITICAL: Must ONLY be called AFTER Firestore write succeeds
+    // Reads order.email / order.phone automatically (already present on
+    // the order object) and sends them hashed to CAPI for match quality.
+    // You can still override with a 2nd { email, phone } argument.
+    trackPurchase: function(order, contact){
+      if(!order) return;
+      var dedupKey = _key('Purchase', order.ref);
+      var userData = {};
+      var email = (contact && contact.email) || order.email;
+      var phone = (contact && contact.phone) || order.phone;
+      if(email) userData.em = email;
+      if(phone) userData.ph = phone;
+      if(order.ref) userData.external_id = order.ref;
+      _track('track', 'Purchase', {
+        content_ids:  (order.orderItems||[]).map(function(i){ return String(i.productId); }),
+        content_type: 'product',
+        content_name: order.products || '',
+        num_items:    order.items || 0,
+        value:        order.total || 0,
+        currency:     'DZD',
+        order_id:     order.ref || '',
+        wilaya:       order.wilaya || '',
+        delivery_type: order.delivery || ''
+      }, dedupKey, userData);
+    },
+
+    // ── CompleteRegistration ────────────────────────────────
+    trackCompleteRegistration: function(method){
+      _track('track', 'CompleteRegistration', {
+        content_name: 'ILA Collection Registration',
+        status:       true,
+        method:       method || 'email'
+      });
+    },
+
+    // ── Contact ─────────────────────────────────────────────
+    trackContact: function(){
+      _track('track', 'Contact', {
+        content_name: 'WhatsApp Contact',
+        page_url:     window.location.href
+      });
+    },
+
+    // ── Lead ────────────────────────────────────────────────
+    trackLead: function(source){
+      _track('track', 'Lead', {
+        content_name: 'ILA Collection Lead',
+        source:       source || 'website'
+      });
+    },
+
+    // ── Custom: Login ────────────────────────────────────────
+    trackLogin: function(method){
+      _track('trackCustom', 'Login', {
+        content_name: 'Admin Login',
+        method:       method || 'email',
+        page_url:     window.location.href
+      });
+    }
+
+  }; // end ILAPixel
+
+})();
+</script>
+<!-- END META PIXEL TRACKING MODULE -->
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+(function(){ emailjs.init({ publicKey: "YOUR_EMAILJS_PUBLIC_KEY" }); })();
+</script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Montserrat:wght@300;400;500;600;700&display=swap');
+/* MOBILE RESET */
+*,*::before,*::after{box-sizing:border-box}
+html{width:100%;overflow-x:hidden}
+img,video{max-width:100%;height:auto}
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --pk:#d4549a;--pk2:#b03d80;--pk3:#f9d0e8;
+  --bl:#3a7bd5;--bl2:#2563ae;--bl3:#dbeafe;
+  --blk:#0a0a0a;--wht:#fafaf8;--sand:#fdf0f7;
+  --warm:#d4549a;--warm2:#b03d80;--border:#f0c8e0;
+  --muted:#888;--red:#c0392b;--green:#27ae60;
+  /* Ovoria-style visual accents (design-only, layered on top of the existing palette) */
+  --olive:#565c3a;--olive-dark:#3d4128;--gold:#8a7c4e;--cream:#f7f1e4;--cream-border:#e7ddc5;
+  --navy:#16213e;--mauve:#8e5ba6;
+}
+body{font-family:'Montserrat',sans-serif;background:var(--wht);color:var(--blk);overflow-x:hidden;width:100%;max-width:100vw}
+.page{display:none;animation:fadeUp .5s ease;width:100%;max-width:100%}
+.page.on{display:block}
+#splash.on{display:flex}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* ═══ SPLASH ═══ */
+#splash{min-height:100vh;background:linear-gradient(135deg,#1a0a12 0%,#0d1a2e 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:20px}
+#splash::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 60% 40%,rgba(212,84,154,.12),transparent 60%),radial-gradient(ellipse at 20% 80%,rgba(58,123,213,.08),transparent 50%);pointer-events:none}
+.splash-logo{font-family:'Cormorant Garamond',serif;font-size:56px;color:#fff;letter-spacing:14px;font-weight:300;text-align:center;margin-bottom:6px;animation:logoIn 1.2s cubic-bezier(.16,1,.3,1) both;position:relative;z-index:1}
+.splash-logo span{color:var(--pk)}
+@keyframes logoIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+.splash-sub{font-size:9px;letter-spacing:5px;color:rgba(255,255,255,.3);text-transform:uppercase;text-align:center;margin-bottom:36px;position:relative;z-index:1}
+
+.auth-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);padding:36px 40px;width:100%;max-width:420px;position:relative;z-index:1;backdrop-filter:blur(10px)}
+.auth-tabs-row{display:flex;margin-bottom:28px;border-bottom:1px solid rgba(255,255,255,.1)}
+.auth-tab{flex:1;background:none;border:none;color:rgba(255,255,255,.4);font-family:'Montserrat',sans-serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;padding:10px;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
+.auth-tab.on{color:#fff;border-bottom-color:var(--pk)}
+
+.soc-row{display:flex;gap:10px;margin-bottom:16px}
+.soc-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 10px;border:1px solid rgba(255,255,255,.12);background:transparent;color:rgba(255,255,255,.7);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .25s}
+.soc-btn:hover{transform:translateY(-2px)}
+.soc-btn.fb-btn{border-color:rgba(24,119,242,.4);color:#6ea8fe}
+.soc-btn.fb-btn:hover{background:rgba(24,119,242,.12);border-color:#1877f2}
+.soc-btn.ig-btn{border-color:rgba(212,84,154,.4);color:#f77cad}
+.soc-btn.ig-btn:hover{background:rgba(212,84,154,.1);border-color:var(--pk)}
+.soc-icon-big{font-size:22px}
+
+.popup-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1000;align-items:center;justify-content:center}
+.popup-overlay.open{display:flex}
+.popup-box{background:#1a0a12;border:1px solid rgba(212,84,154,.2);padding:0;width:100%;max-width:360px;position:relative}
+.popup-head{padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:12px}
+.popup-head-title{font-size:12px;letter-spacing:2px;color:#fff;text-transform:uppercase}
+.popup-body{padding:24px 20px}
+.pop-inp{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#fff;padding:11px 14px;font-size:12px;font-family:'Montserrat',sans-serif;outline:none;margin-bottom:10px;transition:border .2s}
+.pop-inp:focus{border-color:var(--pk)}
+.pop-inp::placeholder{color:rgba(255,255,255,.25)}
+.pop-submit{width:100%;padding:13px;border:none;font-size:9px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;font-family:'Montserrat',sans-serif;margin-top:4px;transition:background .2s}
+.pop-fb{background:#1877f2;color:#fff}.pop-fb:hover{background:#1565d8}
+.pop-ig{background:linear-gradient(135deg,var(--pk),var(--bl));color:#fff}
+.pop-cancel{background:none;border:none;color:rgba(255,255,255,.3);font-size:18px;cursor:pointer;position:absolute;top:12px;right:14px}
+.pop-info{font-size:10px;color:rgba(255,255,255,.3);line-height:1.8;margin-bottom:14px}
+.pop-field-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:5px}
+.pop-err{background:rgba(192,57,43,.15);border:1px solid rgba(192,57,43,.3);color:#e88;padding:8px 12px;font-size:11px;margin-bottom:10px;display:none}
+.pop-success{background:rgba(212,84,154,.12);border:1px solid rgba(212,84,154,.3);color:#f9a8d4;padding:8px 12px;font-size:11px;margin-bottom:10px;display:none}
+
+.or-div{display:flex;align-items:center;gap:10px;margin:14px 0;color:rgba(255,255,255,.2);font-size:9px;letter-spacing:2px}
+.or-div::before,.or-div::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.08)}
+
+.sp-field{margin-bottom:12px}
+.sp-field-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:5px}
+.sp-inp{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#fff;padding:11px 14px;font-size:12px;font-family:'Montserrat',sans-serif;outline:none;transition:all .2s}
+.sp-inp:focus{border-color:var(--pk);background:rgba(255,255,255,.06)}
+.sp-inp::placeholder{color:rgba(255,255,255,.2)}
+.sp-inp.err{border-color:var(--red)!important}
+.sp-inp.ok{border-color:var(--green)!important}
+.field-msg{font-size:10px;margin-top:4px;padding:0 2px}
+.field-msg.err{color:#e88}.field-msg.ok{color:#6dda8f}
+
+.sp-btn{width:100%;padding:14px;border:none;font-size:10px;letter-spacing:4px;text-transform:uppercase;cursor:pointer;font-family:'Montserrat',sans-serif;margin-top:8px;transition:all .2s}
+.sp-btn.gold{background:linear-gradient(135deg,var(--pk),var(--bl));color:#fff}
+.sp-btn.gold:hover{opacity:.9}
+.sp-btn:disabled{opacity:.4;cursor:not-allowed}
+.sp-toggle{text-align:center;margin-top:14px;font-size:11px;color:rgba(255,255,255,.3)}
+.sp-toggle a{color:var(--pk);cursor:pointer}
+.sp-err-box{background:rgba(192,57,43,.12);border:1px solid rgba(192,57,43,.3);color:#e88;padding:10px 14px;font-size:11px;margin-bottom:14px;display:none;line-height:1.7}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:200;background:#fff;border-bottom:2px solid var(--border);box-shadow:0 2px 12px rgba(212,84,154,.08);width:100%;box-sizing:border-box;max-width:100vw;overflow:visible}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;height:60px;max-width:1400px;margin:0 auto;padding:0 12px;gap:8px;box-sizing:border-box}
+.nav-hamburger{display:flex;flex-direction:column;justify-content:center;gap:4px;background:none;border:none;cursor:pointer;padding:6px;flex-shrink:0}
+.nav-hamburger span{display:block;width:20px;height:2px;background:var(--blk)}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-size:22px;letter-spacing:3px;cursor:pointer;color:var(--blk);white-space:nowrap;flex-shrink:0}
+.nav-logo span{color:var(--pk)}
+.nav-menu{list-style:none;position:fixed;top:60px;left:0;right:0;background:#fff;display:flex;flex-direction:column;align-items:flex-start;gap:0;padding:0;max-height:0;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.08);transition:max-height .25s ease;z-index:250}
+.nav-menu.mobile-open{max-height:320px;padding:6px 0}
+.nav-menu li{width:100%}
+.nav-menu a{display:block;width:100%;padding:14px 20px;box-sizing:border-box;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;color:var(--blk);cursor:pointer;transition:color .2s;font-weight:500;border-bottom:1px solid var(--border)}
+.nav-menu a:hover{color:var(--pk)}
+.nav-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+/* Mobile: dropdown sits right under the shorter mobile nav bar */
+@media(max-width:768px){
+  .nav-menu{top:52px}
+}
+.nav-icon{background:none;border:none;cursor:pointer;font-size:17px;position:relative}
+.badge{position:absolute;top:-4px;right:-6px;background:var(--pk);color:#fff;width:16px;height:16px;border-radius:50%;font-size:9px;display:flex;align-items:center;justify-content:center}
+.user-chip{display:flex;align-items:center;gap:8px;background:var(--sand);padding:6px 14px;border:1px solid var(--border);cursor:pointer;font-size:11px;transition:all .2s;position:relative}
+.user-chip:hover{border-color:var(--pk)}
+.user-dropdown{display:none;position:absolute;top:calc(100% + 8px);right:0;background:#fff;border:1px solid var(--border);min-width:210px;z-index:999;box-shadow:0 8px 32px rgba(212,84,154,.12)}
+.user-dropdown.open{display:block}
+.ud-head{padding:14px 16px;border-bottom:1px solid var(--border);font-size:11px}
+.ud-name{font-weight:600;color:var(--blk);margin-bottom:2px}
+.ud-email{color:var(--muted);font-size:10px;word-break:break-all}
+.ud-item{display:flex;align-items:center;gap:10px;padding:11px 16px;font-size:11px;letter-spacing:1px;cursor:pointer;transition:background .15s;border:none;background:none;width:100%;text-align:left;font-family:'Montserrat',sans-serif;color:var(--blk)}
+.ud-item:hover{background:var(--sand)}
+.ud-item.danger{color:var(--red)}
+.ud-sep{height:1px;background:var(--border);margin:4px 0}
+.user-avatar{width:26px;height:26px;border-radius:50%;background:var(--pk);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600}
+.user-avatar img{width:26px;height:26px;border-radius:50%;object-fit:cover}
+.owner-tag{background:linear-gradient(135deg,var(--pk),var(--bl));color:#fff;font-size:8px;letter-spacing:2px;padding:2px 8px;text-transform:uppercase}
+
+/* HERO — Ovoria-style: full-bleed photographic backdrop, centered logo lockup */
+.hero{min-height:520px;background:linear-gradient(135deg,#1a0a12 0%,#0d1a2e 100%);display:flex;align-items:center;justify-content:center;padding:40px;position:relative;overflow:hidden;box-sizing:border-box;width:100%;max-width:100vw;text-align:center}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,rgba(212,84,154,.15),transparent 60%);pointer-events:none}
+.hero-bg-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.55;z-index:0}
+.hero-bg-veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,10,10,.35),rgba(10,10,10,.65) 70%,rgba(10,10,10,.85));z-index:1}
+.hero-text{z-index:2;max-width:520px;margin:0 auto}
+.hero-eyebrow{font-size:9px;letter-spacing:5px;text-transform:uppercase;color:var(--pk);margin-bottom:14px}
+.hero-h{font-family:'Cormorant Garamond',serif;font-size:52px;color:#fff;font-weight:400;line-height:1.1;margin-bottom:14px;letter-spacing:2px}
+.hero-h span{color:var(--pk)}
+.hero-p{font-size:11px;color:rgba(255,255,255,.6);letter-spacing:1px;line-height:2;margin-bottom:28px}
+.hero-cta{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.9);padding:14px 46px;font-size:10px;letter-spacing:4px;text-transform:uppercase;cursor:pointer;font-family:'Montserrat',sans-serif;transition:background .2s,color .2s}
+.hero-cta:hover{background:#fff;color:var(--blk)}
+.hero-imgs{display:none} /* kept in DOM to preserve JS hooks (hero-img-1/2), but visually replaced by hero-bg-img */
+
+/* MARQUEE — scrolling announcement strip beneath the hero (kept for compatibility) */
+.marquee{background:var(--olive);color:#f2efe4;overflow:hidden;white-space:nowrap;padding:10px 0;width:100%;box-sizing:border-box}
+.marquee-track{display:inline-block;padding-left:100%;animation:marqueeScroll 22s linear infinite}
+.marquee-track span{font-size:11px;letter-spacing:3px;text-transform:uppercase;margin:0 18px;font-weight:500}
+@keyframes marqueeScroll{from{transform:translateX(0)}to{transform:translateX(-100%)}}
+
+/* PROMO BAR — bigger scrolling strip that pulls live product photos only */
+.promo-bar{background:var(--bl);overflow:hidden;white-space:nowrap;width:100%;line-height:0;box-sizing:border-box}
+.promo-bar-track{display:flex;align-items:center;flex-wrap:nowrap;width:max-content;will-change:transform;animation:promoBarScroll linear infinite}
+.promo-bar-item{display:block;flex:0 0 auto;margin:0}
+.promo-bar-item img{display:block;flex:0 0 auto;width:150px!important;height:190px!important;min-width:150px;max-width:none;object-fit:cover;border:none;box-shadow:none}
+@keyframes promoBarScroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media(max-width:640px){
+  .promo-bar-item img{width:100px!important;height:126px!important;min-width:100px}
+}
+
+/* SHOP */
+.section{max-width:1400px;margin:0 auto;padding:50px 24px}
+.sec-label{font-size:9px;letter-spacing:4px;color:var(--pk);text-transform:uppercase}
+.sec-title{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:500;margin-top:4px;margin-bottom:28px}
+.cats-strip{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:32px}
+.cat-chip{border:1px solid var(--border);padding:8px 20px;font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;background:#fff;color:var(--blk);font-family:'Montserrat',sans-serif}
+.cat-chip.act,.cat-chip:hover{background:#fff;color:var(--olive);border-color:var(--olive)}
+/* Boutique-grid layout: multiple cards per row (responsive), refined card container */
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px 12px;max-width:1400px;margin:0 auto}
+@media(min-width:700px){.grid{grid-template-columns:repeat(3,1fr);gap:22px}}
+@media(min-width:1000px){.grid{grid-template-columns:repeat(4,1fr);gap:26px}}
+.pcard{border:1px solid var(--border);background:#fff;border-radius:6px;overflow:hidden;cursor:pointer;transition:transform .3s,box-shadow .3s;position:relative;display:flex;flex-direction:column}
+.pcard:hover{transform:translateY(-6px);box-shadow:0 18px 40px rgba(212,84,154,.14)}
+.pcard-img{aspect-ratio:3/4;height:auto;overflow:hidden;background:var(--sand);position:relative}
+.pcard-img img{width:100%;height:100%;object-fit:cover;transition:transform .6s}
+.pcard:hover .pcard-img img{transform:scale(1.07)}
+.pcard-badge{position:absolute;top:8px;left:8px;background:var(--pk);color:#fff;font-size:7px;letter-spacing:1.5px;padding:3px 8px;border-radius:20px;text-transform:uppercase;z-index:2}
+.pcard-badge.sale{background:var(--red)}
+.pcard-badge.promo{background:#e8890c}
+.pcard-wish{position:absolute;top:8px;right:8px;background:rgba(255,255,255,.92);border:none;width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.12);z-index:2}
+.pcard-wish.on{background:var(--pk);color:#fff}
+/* Optional multi-photo grid inside the card, shown when a product has extra images */
+.pcard-photo-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--border)}
+.pcard-photo-grid img{width:100%;height:90px;object-fit:cover;display:block}
+/* "VOIR LE PRODUIT →" — now a slim overlay bar revealed over the image on hover/tap */
+.pcard-view{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;gap:6px;background:linear-gradient(135deg,var(--mauve),var(--navy));color:#fff;border:none;width:100%;padding:9px 4px;font-size:8px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Montserrat',sans-serif;opacity:0;transform:translateY(100%);transition:opacity .25s,transform .25s;z-index:2}
+.pcard:hover .pcard-view,.pcard:focus-within .pcard-view{opacity:1;transform:translateY(0)}
+.pcard-info{padding:10px 10px 12px;text-align:left;flex:1;display:flex;flex-direction:column}
+.pcard-cat{font-size:8px;color:var(--pk);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.pcard-name{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:500;margin-bottom:8px;line-height:1.25}
+.pcard-bot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:auto}
+.pcard-price{font-size:13px;font-weight:600;color:var(--gold);letter-spacing:.5px}
+.qadd{background:none;border:1px solid var(--border);color:var(--muted);width:24px;height:24px;border-radius:50%;cursor:pointer;font-size:12px;font-family:'Montserrat',sans-serif;flex-shrink:0}
+.qadd:hover{border-color:var(--olive);color:var(--olive)}
+@media(hover:none){.pcard-view{opacity:1;transform:translateY(0);position:static;background:none;color:var(--muted);padding:0;margin-top:2px}}
+
+/* MODALS */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:500;align-items:center;justify-content:center;padding:16px}
+.modal-bg.open{display:flex}
+.modal{background:#fff;width:100%;max-width:780px;max-height:92vh;overflow-y:auto;display:flex;position:relative}
+.modal-imgs{width:340px;flex-shrink:0;background:var(--sand);display:flex;flex-direction:column;position:relative}
+.modal-imgs #pm-main-img{width:100%;flex:1;min-height:0;object-fit:cover}
+.modal-imgs .pm-thumbs{padding:8px;background:var(--sand);flex-shrink:0}
+/* Gallery nav arrows + dot indicators (Ovoria-style) */
+.pm-arrow{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.85);border:none;width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;z-index:3;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.pm-arrow.prev{left:10px}.pm-arrow.next{right:10px}
+.pm-dots{display:flex;justify-content:center;gap:6px;padding:10px 0;background:var(--sand);flex-shrink:0}
+.pm-dot{width:7px;height:7px;border-radius:50%;background:var(--border);cursor:pointer;transition:all .2s}
+.pm-dot.sel{background:var(--olive);width:16px;border-radius:4px}
+.modal-detail{flex:1;padding:32px}
+.md-cat{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--pk);margin-bottom:8px}
+.md-name{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:500;margin-bottom:14px;line-height:1.1}
+.md-price{font-size:22px;font-weight:600;color:var(--gold);margin-bottom:20px;letter-spacing:1px}
+.md-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.sizes-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:20px}
+.sz{width:40px;height:40px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;transition:all .2s}
+.sz:hover,.sz.sel{background:var(--olive);color:#fff;border-color:var(--olive)}
+/* Rectangular color-name buttons replacing plain color dots */
+.color-rect{padding:9px 16px;border:1px solid var(--border);background:#fff;font-size:11px;letter-spacing:.5px;cursor:pointer;transition:all .2s;font-family:'Montserrat',sans-serif;display:inline-flex;align-items:center;gap:7px}
+.color-rect .cdot{width:12px;height:12px;border-radius:50%;display:inline-block;border:1px solid rgba(0,0,0,.15)}
+.color-rect.sel{border-color:var(--olive);background:var(--cream);color:var(--olive-dark);font-weight:600}
+/* Cream "order info" panel wrapping size/color/qty selection */
+.order-box{background:var(--cream);border:1px solid var(--cream-border);padding:16px 18px;margin-bottom:16px}
+.qty-row{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+.qty-btn{width:34px;height:34px;border:1px solid var(--border);background:#fff;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center}
+.qty-val{font-size:15px;font-weight:500;min-width:28px;text-align:center}
+.order-now-btn{position:sticky;bottom:0;left:0;width:100%;background:linear-gradient(135deg,var(--mauve),var(--navy));color:#fff;border:none;padding:15px;font-size:9px;letter-spacing:4px;text-transform:uppercase;cursor:pointer;font-family:'Montserrat',sans-serif;margin-top:14px;box-shadow:0 -8px 18px rgba(22,33,62,.18),0 6px 18px rgba(22,33,62,.25);z-index:6}
+.order-now-btn:hover{opacity:.92}
+.add-big{width:100%;background:var(--olive-dark);color:#fff;border:none;padding:14px;font-size:9px;letter-spacing:4px;text-transform:uppercase;cursor:pointer;font-family:'Montserrat',sans-serif;margin-bottom:8px}
+.add-big:hover{opacity:.9}
+.pay-info-box{background:var(--sand);padding:12px 14px;font-size:11px;line-height:1.8;margin-bottom:16px;border-left:3px solid var(--pk)}
+.mclose{position:absolute;top:14px;right:14px;background:#fff;border:1px solid var(--border);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:18px;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.modal-imgs #pm-main-img{cursor:zoom-in}
+#img-lightbox{display:none;position:fixed;inset:0;background:rgba(10,10,10,.94);z-index:9999;align-items:center;justify-content:center;padding:24px;animation:lbFade .18s ease}
+#img-lightbox.open{display:flex}
+#img-lightbox img{max-width:94vw;max-height:90vh;object-fit:contain;border-radius:4px;animation:lbZoom .22s ease;touch-action:pinch-zoom}
+#img-lightbox-close{position:fixed;top:16px;right:18px;background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.3);width:38px;height:38px;border-radius:50%;cursor:pointer;font-size:22px;line-height:1;backdrop-filter:blur(4px)}
+@keyframes lbFade{from{opacity:0}to{opacity:1}}
+@keyframes lbZoom{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+
+/* CART DRAWER */
+.cart-drawer{position:fixed;top:0;right:-420px;width:400px;height:100vh;background:#fff;z-index:600;border-left:2px solid var(--border);transition:right .4s cubic-bezier(.16,1,.3,1);display:flex;flex-direction:column}
+.cart-drawer.open{right:0}
+.cart-head{padding:18px 22px;border-bottom:2px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,rgba(212,84,154,.05),rgba(58,123,213,.05))}
+.cart-head h3{font-size:12px;letter-spacing:3px;text-transform:uppercase;font-weight:500}
+.cart-close{background:none;border:none;font-size:20px;cursor:pointer;color:var(--pk)}
+.cart-items-list{flex:1;overflow-y:auto;padding:14px 22px}
+.ci{display:flex;gap:12px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.ci img{width:68px;height:82px;object-fit:cover;background:var(--sand);flex-shrink:0}
+.ci-info{flex:1}
+.ci-name{font-size:12px;font-weight:500;margin-bottom:3px}
+.ci-meta{font-size:10px;color:var(--muted);margin-bottom:6px}
+.ci-price{font-size:12px;font-weight:600;color:var(--pk)}
+.ci-del{background:none;border:none;cursor:pointer;color:var(--muted);float:right;font-size:15px}
+.cart-foot{padding:18px 22px;border-top:2px solid var(--border)}
+.ct-row{display:flex;justify-content:space-between;font-size:12px;margin-bottom:7px}
+.bm-note-box{background:var(--sand);padding:11px 13px;font-size:11px;line-height:1.8;margin:12px 0;border-left:3px solid var(--pk)}
+.co-btn{width:100%;background:linear-gradient(135deg,var(--pk),var(--bl));color:#fff;border:none;padding:14px;font-size:9px;letter-spacing:4px;text-transform:uppercase;cursor:pointer;font-family:'Montserrat',sans-serif}
+.co-btn:hover{opacity:.9}
+
+/* CHECKOUT */
+.co-wrap{max-width:1050px;margin:0 auto;padding:44px 24px;display:grid;grid-template-columns:1fr 340px;gap:36px;box-sizing:border-box}
+.co-sec{margin-bottom:24px}
+.co-sec-h{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--pk);margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid var(--border)}
+.co-inp{width:100%;border:1px solid var(--border);padding:11px 13px;font-size:13px;font-family:'Montserrat',sans-serif;outline:none;margin-bottom:10px;transition:border .2s}
+.co-inp:focus{border-color:var(--pk)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.del-opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.del-opt{border:1px solid var(--border);padding:13px;cursor:pointer;text-align:center;font-size:11px;transition:all .2s}
+.del-opt.sel{border-color:var(--pk);background:var(--sand)}
+.order-sb{background:linear-gradient(135deg,rgba(212,84,154,.05),rgba(58,123,213,.05));padding:24px;border:1px solid var(--border);height:fit-content}
+.os-title{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--pk);margin-bottom:18px}
+.os-item{display:flex;gap:10px;margin-bottom:12px;align-items:center}
+.os-img{width:52px;height:64px;object-fit:cover;background:var(--sand);flex-shrink:0}
+.os-name{font-size:11px;font-weight:500}
+.os-sub{font-size:9px;color:var(--muted);margin-top:2px}
+.os-price{font-size:12px;font-weight:600;color:var(--pk);margin-left:auto;flex-shrink:0}
+.os-div{height:1px;background:var(--border);margin:14px 0}
+.os-row{display:flex;justify-content:space-between;font-size:12px;margin-bottom:7px}
+.os-row.big{font-size:14px;font-weight:600;margin-top:6px}
+.pay-box{background:#fff;border:1px solid var(--border);padding:16px;margin-top:18px}
+.pb-h{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--pk);margin-bottom:10px}
+.bm-big{font-size:20px;font-weight:600;color:var(--pk);font-family:'Cormorant Garamond',serif}
+.bm-rip{background:var(--blk);color:#fff;padding:8px 12px;font-size:10px;letter-spacing:1px;margin:10px 0;word-break:break-all}
+.place-btn{width:100%;background:linear-gradient(135deg,var(--pk),var(--bl));color:#fff;border:none;padding:14px;font-size:9px;letter-spacing:4px;text-transform:uppercase;cursor:pointer;font-family:'Montserrat',sans-serif;margin-top:8px}
+.place-btn:hover{opacity:.9}
+
+/* SUCCESS */
+.succ-wrap{max-width:520px;margin:0 auto;padding:70px 24px;text-align:center}
+.succ-icon{font-size:50px;margin-bottom:20px}
+.succ-h{font-family:'Cormorant Garamond',serif;font-size:38px;margin-bottom:10px;font-weight:400;color:var(--pk)}
+.succ-p{font-size:12px;color:var(--muted);line-height:2;margin-bottom:24px}
+.succ-ref{background:var(--sand);padding:14px;font-size:13px;letter-spacing:2px;margin-bottom:20px;border-left:3px solid var(--pk)}
+.succ-bm{background:var(--sand);padding:14px;font-size:12px;line-height:1.9;margin-bottom:24px;text-align:left;border-left:3px solid var(--bl)}
+.succ-back{background:linear-gradient(135deg,var(--pk),var(--bl));color:#fff;border:none;padding:13px 34px;font-size:9px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;font-family:'Montserrat',sans-serif}
+
+/* ADMIN */
+.admin-wrap{display:flex;min-height:580px}
+.admin-side{width:220px;background:linear-gradient(180deg,#1a0a12,#0d1a2e);flex-shrink:0;display:flex;flex-direction:column}
+.admin-logo{padding:20px 18px;border-bottom:1px solid rgba(255,255,255,.08);font-family:'Cormorant Garamond',serif;font-size:17px;color:#fff;letter-spacing:4px}
+.admin-logo span{color:var(--pk)}
+.admin-owner{padding:12px 18px;border-bottom:1px solid rgba(255,255,255,.06);font-size:9px;letter-spacing:2px;color:var(--pk);text-transform:uppercase}
+.admin-nav-item{display:flex;align-items:center;gap:10px;padding:12px 18px;cursor:pointer;font-size:10px;letter-spacing:2px;color:rgba(255,255,255,.45);transition:all .2s;text-transform:uppercase}
+.admin-nav-item:hover,.admin-nav-item.on{color:#fff;background:rgba(255,255,255,.05)}
+.admin-nav-item.on{border-right:2px solid var(--pk)}
+.admin-main{flex:1;background:#fdf0f7;padding:28px;overflow-y:auto}
+.admin-h{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:500;margin-bottom:22px;color:var(--pk)}
+.stats4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}
+.sbox{background:#fff;padding:18px;border:1px solid var(--border)}
+.sb-l{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.sb-v{font-size:26px;font-weight:600;color:var(--pk)}
+.sb-c{font-size:10px;color:var(--green);margin-top:3px}
+.atbl{width:100%;background:#fff;border:1px solid var(--border);overflow:hidden}
+.atbl table{width:100%;border-collapse:collapse}
+.atbl th{background:var(--sand);padding:9px 12px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:500;text-align:left}
+.atbl td{padding:9px 12px;border-bottom:1px solid var(--border);font-size:12px}
+.atbl tr:last-child td{border:none}
+.tag{display:inline-block;padding:2px 9px;border-radius:10px;font-size:9px;font-weight:500}
+.t-pend{background:#fef3c7;color:#92400e}
+.t-conf{background:#d1fae5;color:#065f46}
+.t-delv{background:#dbeafe;color:#1e40af}
+.act-btn{background:none;border:1px solid var(--border);padding:4px 10px;font-size:10px;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .2s}
+.act-btn:hover{background:var(--pk);color:#fff;border-color:var(--pk)}
+.act-btn.del:hover{background:var(--red);border-color:var(--red)}
+
+/* FOOTER */
+footer{background:linear-gradient(135deg,#1a0a12,#0d1a2e);color:rgba(255,255,255,.5);padding:44px 24px 20px;margin-top:60px;box-sizing:border-box;width:100%;max-width:100vw;overflow:hidden}
+.f-inner{max-width:1400px;margin:0 auto}
+.f-cols{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:36px;margin-bottom:28px}
+.f-logo{font-family:'Cormorant Garamond',serif;font-size:26px;color:#fff;letter-spacing:5px;margin-bottom:8px}
+.f-logo span{color:var(--pk)}
+.f-desc{font-size:11px;line-height:2}
+.f-h{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:12px}
+.f-links{list-style:none;display:flex;flex-direction:column;gap:7px}
+.f-links a{font-size:11px;color:rgba(255,255,255,.4);text-decoration:none;cursor:pointer;transition:color .2s}
+.f-links a:hover{color:var(--pk)}
+.f-bot{border-top:1px solid rgba(255,255,255,.07);padding-top:18px;display:flex;justify-content:space-between;font-size:10px}
+.f-cod-pill{display:inline-block;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);color:#fff;font-size:10px;letter-spacing:1px;padding:9px 18px;border-radius:20px;margin:10px 0 18px;cursor:pointer}
+.wa-fab{position:fixed;bottom:22px;right:22px;background:#25d366;color:#fff;width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;z-index:400;box-shadow:0 4px 18px rgba(37,211,102,.45);text-decoration:none}
+
+/* ═══════════════════════════════════════
+   MOBILE RESPONSIVE — FULL PHONE SUPPORT
+   ═══════════════════════════════════════ */
+html,body{overflow-x:hidden;max-width:100%;width:100%}
+*{box-sizing:border-box;max-width:100%}
+img,video{max-width:100%;height:auto}
+
+@media(max-width:768px){
+  html,body{overflow-x:hidden;width:100%}
+  /* NAV */
+  nav{overflow:visible}
+  .nav-inner{padding:0 10px;height:52px;gap:6px}
+  .nav-logo{font-size:16px;letter-spacing:2px}
+  .nav-right{gap:6px}
+  .nav-icon{font-size:15px}
+  .user-chip{padding:4px 8px;gap:4px;max-width:80px}
+  .user-chip>span#user-name-nav{display:none}
+  .user-avatar{width:22px;height:22px;font-size:9px}
+  .owner-tag{display:none!important}
+  #owner-tag-el{display:none!important}
+  /* User dropdown full width on mobile */
+  .user-dropdown{position:fixed!important;top:54px!important;right:6px!important;left:6px!important;width:auto!important;min-width:auto!important;z-index:999}
+  .ud-item{padding:14px 16px;font-size:13px}
+
+  /* HERO */
+  .hero{min-height:420px;padding:28px 16px;overflow:hidden}
+  .hero-text{max-width:100%;text-align:center}
+  .hero-h{font-size:34px}
+  .marquee-track span{font-size:9px;margin:0 12px}
+
+  /* SHOP */
+  .section{padding:24px 12px}
+  .grid{gap:10px 8px;max-width:100%}
+  .pcard-photo-grid img{height:70px}
+  .pcard-info{padding:8px 8px 10px}
+  .pcard-name{font-size:13px}
+  .pcard-price{font-size:11px}
+  .cats-strip{gap:6px;padding-bottom:6px}
+
+  /* MODAL */
+  .modal{flex-direction:column;max-width:100%;border-radius:0;max-height:100vh}
+  .modal-imgs{width:100%;height:auto}
+  .modal-imgs #pm-main-img{height:240px;width:100%;object-fit:cover;flex:none}
+  .modal-detail{padding:16px 14px 28px}
+  .modal-bg{align-items:flex-end;padding:0}
+  .md-name{font-size:20px}
+
+  /* CART DRAWER */
+  .cart-drawer{width:100%;max-width:100%;right:-100%}
+  .cart-drawer.open{right:0}
+
+  /* WISHLIST DRAWER */
+  #wish-drawer{width:100%;max-width:100%;right:-100%}
+  #wish-drawer.open{right:0}
+
+  /* ORDERS DRAWER */
+  #orders-drawer{width:100%;max-width:100%;right:-100%}
+  #orders-drawer.open{right:0}
+
+  /* CHECKOUT */
+  .co-wrap{grid-template-columns:1fr;padding:16px 12px;gap:20px}
+  .g2{grid-template-columns:1fr}
+  .del-opts{grid-template-columns:1fr 1fr}
+
+  /* SUCCESS */
+  .succ-wrap{padding:24px 14px}
+
+  /* ADMIN */
+  .admin-wrap{flex-direction:column;min-height:auto;overflow-x:hidden}
+  .admin-side{width:100%;flex-direction:row;flex-wrap:nowrap;padding:6px 8px;overflow-x:auto;-webkit-overflow-scrolling:touch;min-height:auto}
+  .admin-logo,.admin-owner{display:none}
+  .admin-nav-item{padding:7px 10px;font-size:8px;white-space:nowrap;flex-shrink:0}
+  .admin-main{padding:14px 10px;overflow-x:hidden}
+  .stats4{grid-template-columns:repeat(2,1fr);gap:8px}
+  .atbl{overflow-x:auto;-webkit-overflow-scrolling:touch;display:block}
+  .atbl table{min-width:500px}
+  .admin-h{font-size:18px}
+
+  /* FOOTER */
+  .f-cols{grid-template-columns:1fr;gap:20px}
+  .f-bot{flex-direction:column;gap:6px;text-align:center}
+}
+
+@media(max-width:480px){
+  input,select,textarea{font-size:16px!important}
+  .nav-logo{font-size:18px;letter-spacing:2px}
+  .hero-h{font-size:28px}
+  .grid{gap:8px}
+  .modal{max-height:100vh;border-radius:0}
+  .co-wrap{padding:12px 10px}
+  .del-opts{grid-template-columns:1fr}
+  .admin-main{padding:10px 8px}
+  .atbl table{min-width:440px;font-size:10px}
+  .stats4{grid-template-columns:1fr 1fr}
+  #admin-page input,#admin-page select,#admin-page textarea{width:100%!important;box-sizing:border-box!important}
+}
+
+@media(max-width:380px){
+  .nav-logo{font-size:15px;letter-spacing:1px}
+  .grid{gap:6px}
+  .hero-h{font-size:24px}
+}
+</style>
+  <!-- Firebase — Real-Time Sync (Fixed) -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { getFirestore, doc, setDoc, getDoc, collection, addDoc, deleteDoc, onSnapshot, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDVhqmoat3TilouKKZlJ9jyGcKd6PQEJX8",
+      authDomain: "ila-collection-store.firebaseapp.com",
+      projectId: "ila-collection-store",
+      storageBucket: "ila-collection-store.firebasestorage.app",
+      messagingSenderId: "62819129226",
+      appId: "1:62819129226:web:b89c76edb6619e4d421a73"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // ═══ SETTINGS ═══
+    window.fbSaveSettings = async function(settings){
+      try{
+        await setDoc(doc(db,'settings','admin'), settings, {merge:true});
+        console.log('✅ Settings saved to Firebase');
+        return true;
+      }catch(e){console.error('fbSaveSettings:',e);return false;}
+    };
+
+    window.fbLoadSettings = async function(){
+      try{
+        const snap = await getDoc(doc(db,'settings','admin'));
+        return snap.exists() ? snap.data() : null;
+      }catch(e){console.error('fbLoadSettings:',e);return null;}
+    };
+
+    // ═══ ORDERS — Real-Time ═══
+    window.fbSaveOrder = async function(order){
+      try{
+        const ref = await addDoc(collection(db,'orders'), {...order, createdAt: new Date().toISOString()});
+        return ref.id;
+      }catch(e){console.error('fbSaveOrder:',e);return null;}
+    };
+
+    // [FIX] Orders: onSnapshot listener — updates all devices instantly
+    window.fbListenOrders = function(callback){
+      const q = query(collection(db,'orders'), orderBy('createdAt','desc'));
+      const unsub = onSnapshot(q, snap=>{
+        console.log('🔄 [Real-Time] Orders updated — count:', snap.docs.length);
+        callback(snap.docs.map(d=>({...d.data(), _fbId:d.id})));
+      }, err=>{
+        console.error('❌ Orders listener error:', err);
+      });
+      return unsub;
+    };
+
+    // [FIX] Update order status directly in Firestore → triggers onSnapshot on all devices
+    window.fbUpdateOrderStatus = async function(fbId, status){
+      try{
+        console.log('📝 [Real-Time] Updating order status:', fbId, '→', status);
+        await setDoc(doc(db,'orders',fbId), {status}, {merge:true});
+        console.log('✅ [Real-Time] Order status updated in Firestore — all devices will sync');
+      }catch(e){console.error('❌ fbUpdateOrderStatus error:',e);}
+    };
+
+    window.fbDeleteOrder = async function(fbId){
+      try{
+        console.log('🗑️ [Real-Time] Deleting order from Firestore:', fbId);
+        await deleteDoc(doc(db,'orders',fbId));
+        console.log('✅ [Real-Time] Order deleted — all devices will sync');
+      }catch(e){console.error('❌ fbDeleteOrder error:',e);}
+    };
+
+    // ═══ PRODUCTS — Real-Time (FIXED: was getDocs, now onSnapshot) ═══
+    window.fbSaveProduct = async function(p){
+      try{
+        console.log('💾 [Real-Time] Saving product to Firestore:', p.name);
+        await setDoc(doc(db,'products',String(p.id)), p);
+        console.log('✅ [Real-Time] Product saved — all devices will sync');
+        return true;
+      }catch(e){
+        console.error('❌ fbSaveProduct error:',e);
+        alert('⚠️ Le produit n\'a pas pu être enregistré sur Firebase.\n\nErreur: '+(e && e.message ? e.message : e)+'\n\nVérifiez votre connexion internet et les règles de sécurité Firestore (le produit ne sera visible par les clients que s\'il est bien enregistré).');
+        return false;
+      }
+    };
+
+    window.fbDeleteProduct = async function(id){
+      try{
+        console.log('🗑️ [Real-Time] Deleting product from Firestore:', id);
+        await deleteDoc(doc(db,'products',String(id)));
+        console.log('✅ [Real-Time] Product deleted — all devices will sync');
+      }catch(e){console.error('❌ fbDeleteProduct error:',e);}
+    };
+
+    // [FIX] NEW: Real-time products listener using onSnapshot instead of getDocs
+    window.fbListenProducts = function(callback){
+      const unsub = onSnapshot(collection(db,'products'), snap=>{
+        const products = snap.docs.map(d => d.data());
+        console.log('🔄 [Real-Time] Products updated — count:', products.length, '| Changes:', snap.docChanges().map(c=>c.type+':'+c.doc.id).join(', '));
+        // Log each change type for debugging
+        snap.docChanges().forEach(change=>{
+          if(change.type==='added')    console.log('  ➕ Product added:', change.doc.data().name);
+          if(change.type==='modified') console.log('  ✏️ Product modified:', change.doc.data().name);
+          if(change.type==='removed')  console.log('  ✕ Product removed:', change.doc.id);
+        });
+        callback(products);
+      }, err=>{
+        console.error('❌ Products listener error:', err);
+      });
+      return unsub;
+    };
+
+    window.fbReady = true;
+    console.log('✅ Firebase connected — Real-Time listeners ready!');
+
+    // ═══ START ALL REAL-TIME LISTENERS ON PAGE LOAD ═══
+    window.addEventListener('load', async ()=>{
+
+      // 1. Load settings once (settings rarely change, one-time fetch is fine)
+      try {
+        const settings = await window.fbLoadSettings();
+        if(settings){
+          // ✅ FIX: NEVER override OWNER credentials from Firebase
+          // adminEmail/adminPass in Firestore may be wrong/corrupted → always use hardcoded values
+          if(settings.storePhone){
+            STORE_PHONE = settings.storePhone;
+            STORE_PHONE_CLEAN = settings.storePhone.replace(/[^0-9]/g,'');
+            const fpd = document.getElementById('footer-phone-display');
+            if(fpd) fpd.textContent = settings.storePhone;
+            document.querySelectorAll('.wa-fab,#wa-fab-link').forEach(wa=>{
+              wa.href='https://wa.me/213'+STORE_PHONE_CLEAN.slice(1);
+            });
+          }
+          window._fbSettingsLoaded = true;
+          console.log('✅ Settings loaded from Firebase:', settings);
+        } else {
+          console.log('ℹ️ No settings in Firebase yet');
+          window._fbSettingsLoaded = false;
+        }
+      } catch(fbErr) {
+        console.error('❌ Firebase settings load error:', fbErr);
+        window._fbSettingsLoaded = false;
+      }
+
+      // 2. [FIX] Listen to products in real-time — replaces getDocs (one-shot)
+      // This fires immediately with all products, then fires again on ANY change
+      window._unsubProducts = window.fbListenProducts(products => {
+        // Rebuild PRODUCTS array from Firestore — single source of truth
+        PRODUCTS.length = 0;
+        products.forEach(p => PRODUCTS.push(p));
+
+        // Update nextProductId so new products get a unique id
+        if(products.length > 0){
+          const maxId = Math.max(...products.map(p => Number(p.id)||0));
+          if(maxId >= nextProductId) nextProductId = maxId + 1;
+        }
+
+        // Re-render shop grid immediately on all devices
+        if(typeof renderProducts === 'function') renderProducts();
+        // Re-render admin products panel if open
+        if(typeof renderAdmin === 'function' && document.getElementById('admin-content') &&
+           document.getElementById('admin-content').querySelector('.admin-h')?.textContent?.includes('Produits')){
+          renderAdmin('products');
+        }
+        // Update hero images
+        const h1 = document.getElementById('hero-img-1');
+        const h2 = document.getElementById('hero-img-2');
+        if(h1 && PRODUCTS[0]) h1.src = PRODUCTS[0].img;
+        if(h2 && PRODUCTS[4]) h2.src = PRODUCTS[4].img;
+      });
+
+      // 3. Listen to orders in real-time — already used onSnapshot, kept as-is
+      window._unsubOrders = window.fbListenOrders(orders => {
+        console.log('🔄 [Real-Time] Orders received:', orders.length);
+        window._fbOrders = orders;
+        if(typeof ORDERS_DB !== 'undefined'){
+          ORDERS_DB.length = 0;
+          orders.forEach(o => ORDERS_DB.push(o));
+        }
+        // Auto-refresh admin orders panel if it is currently visible
+        const adminContent = document.getElementById('admin-content');
+        if(adminContent){
+          const h = adminContent.querySelector('.admin-h');
+          if(h && (h.textContent.includes('Commandes') || h.textContent.includes('Dashboard'))){
+            if(typeof renderAdmin === 'function'){
+              const isOrders = h.textContent.includes('Commandes');
+              renderAdmin(isOrders ? 'orders' : 'dash');
+            }
+          }
+        }
+      });
+    });
+  </script>
+</head>
+<body>
+
+<!-- ═══ SPLASH ═══ -->
+<div id="splash" class="page on">
+  <div class="splash-logo">ILA <span>Collection</span></div>
+  <div class="splash-sub">Made for Confident Women — Bordj Bou Arreridj</div>
+  <div class="auth-card">
+    <div style="text-align:center;margin-top:18px">
+      <a onclick="openAdminLogin()" style="margin-top:12px;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,.12);cursor:pointer;text-decoration:none;text-transform:uppercase">⚙ Admin</a>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN SITE -->
+<div id="main-site" class="page">
+  <nav>
+    <div class="nav-inner">
+      <div class="nav-logo" onclick="handleLogoClick()">ILA <span>Collection</span></div>
+      <ul class="nav-menu" id="nav-menu-list">
+        <li><a onclick="filterCat('All');goShop();toggleNavMenu(false)">Collection</a></li>
+        <li><a onclick="filterCat('Women');goShop();toggleNavMenu(false)">Femmes</a></li>
+        <li><a onclick="filterCat('Footwear');goShop();toggleNavMenu(false)">Chaussures</a></li>
+        <li><a id="owner-nav-link" style="display:none;color:var(--pk)" onclick="showPage('admin-page');renderAdmin('dash');toggleNavMenu(false)">⚙ Admin</a></li>
+      </ul>
+      <div class="nav-right">
+        <button class="nav-icon" onclick="openWishlistPanel()">♡<span class="badge" id="wish-count">0</span></button>
+        <button class="nav-icon" onclick="openCart()">🛒<span class="badge" id="cart-count">0</span></button>
+        <button class="nav-hamburger" onclick="toggleNavMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
+        <div id="owner-tag-el" style="display:none"><div class="owner-tag">Owner</div></div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- SHOP PAGE -->
+  <div id="shop-page">
+    <div class="hero">
+      <img id="hero-img-1" class="hero-bg-img" src="" alt="">
+      <div class="hero-bg-veil"></div>
+      <div class="hero-text">
+        <div class="hero-eyebrow">ILA Collection — Bordj Bou Arreridj</div>
+        <div class="hero-h">Made for <span>Confident</span> Women</div>
+        <p class="hero-p">Livraison disponible dans les 58 wilayas d'Algérie</p>
+        <button class="hero-cta" onclick="document.getElementById('shop-section').scrollIntoView({behavior:'smooth'})">Shop Now</button>
+      </div>
+      <div class="hero-imgs" id="hero-imgs-el">
+        <div class="hero-img-slot"><img id="hero-img-2" src="" alt=""></div>
+      </div>
+    </div>
+    <div class="promo-bar" id="promo-bar"><div class="promo-bar-track" id="promo-bar-track"></div></div>
+    <div class="section" id="shop-section">
+      <div class="sec-label">New Collection</div>
+      <div class="sec-title" id="shop-title">The Collection</div>
+      <div class="cats-strip" id="cat-strip"></div>
+      <div class="grid" id="prod-grid"></div>
+    </div>
+  </div>
+
+  <!-- CHECKOUT PAGE -->
+  <div id="checkout-page" style="display:none">
+    <div class="co-wrap">
+      <div>
+        <div class="co-sec">
+          <div class="co-sec-h">Delivery Information</div>
+          <div class="g2">
+            <input class="co-inp" id="co-fn" placeholder="First Name *">
+            <input class="co-inp" id="co-ln" placeholder="Last Name">
+          </div>
+          <input class="co-inp" id="co-ph" placeholder="Phone Number * (07XX XXX XXX)">
+          <input class="co-inp" id="co-em" placeholder="Email Address">
+          <div class="co-sec-h" style="margin-top:10px">Wilaya & Commune</div>
+          <select class="co-inp" id="co-wilaya" onchange="loadBal()"><option value="">— Select Wilaya —</option></select>
+          <select class="co-inp" id="co-commune"><option value="">— Select Commune —</option></select>
+          <input class="co-inp" id="co-addr" placeholder="Address / Neighborhood (optional)">
+        </div>
+        <div class="co-sec">
+          <div class="co-sec-h">Delivery Method</div>
+          <div class="del-opts">
+            <div class="del-opt sel" id="del-home" onclick="setDel('home',this)">🏠 Home Delivery<br><strong id="del-home-price">— DA</strong></div>
+            <div class="del-opt" id="del-desk" onclick="setDel('desk',this)">🏢 Stop Desk<br><strong id="del-desk-price">— DA</strong></div>
+          </div>
+          <div id="delivery-notice" style="font-size:10px;color:var(--muted);margin-top:6px;display:none">⚠️ Veuillez sélectionner une wilaya pour voir le prix de livraison.</div>
+        </div>
+        <div class="co-sec">
+          <input class="co-inp" id="co-ref" type="hidden" value="COD">
+          <input class="co-inp" id="co-notes" placeholder="Notes (optional)">
+        </div>
+        <button class="place-btn" onclick="placeOrder()">✓ Confirm Order</button>
+      </div>
+      <div id="order-sidebar"></div>
+    </div>
+  </div>
+
+  <!-- SUCCESS PAGE -->
+  <div id="success-page" style="display:none">
+    <div class="succ-wrap">
+      <div class="succ-icon">💜</div>
+      <div class="succ-h">Order Confirmed!</div>
+      <p class="succ-p">Thank you for shopping with ILA Collection. We'll contact you to confirm your order.</p>
+      <div class="succ-ref" id="succ-ref-display"></div>
+      <div class="succ-bm" id="succ-bm-display"></div>
+      <button class="succ-back" onclick="goShop()">Continue Shopping</button>
+    </div>
+  </div>
+
+  <!-- ADMIN PAGE -->
+  <div id="admin-page" style="display:none">
+    <div class="admin-wrap">
+      <div class="admin-side">
+        <div class="admin-logo">ILA <span>Admin</span></div>
+        <div class="admin-owner" id="admin-owner-name">Owner Panel</div>
+        <div class="admin-nav-item on" onclick="adminNav('dash',this)">📊 Dashboard</div>
+        <div class="admin-nav-item" onclick="adminNav('orders',this)">📦 Orders</div>
+        <div class="admin-nav-item" onclick="adminNav('users',this)">👥 Customers</div>
+        <div class="admin-nav-item" onclick="adminNav('products',this)">👗 Products</div>
+        <div class="admin-nav-item" onclick="adminNav('delivery',this)">🚚 Livraison</div>
+        <div class="admin-nav-item" onclick="adminNav('settings',this)">⚙️ Settings</div>
+        <div style="flex:1"></div>
+        <div class="admin-nav-item" onclick="logOut()" style="color:var(--red);border-top:1px solid rgba(255,255,255,.06)">↩ Sign Out</div>
+      </div>
+      <div class="admin-main" id="admin-content"></div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="f-inner">
+      <div class="f-cols">
+        <div>
+          <div class="f-logo" onclick="handleLogoClick()" style="cursor:pointer">ILA <span>Collection</span></div>
+          <p class="f-desc">Made for confident women.<br>📍 Bordj Bou Arreridj<br>📦 Livraison 58 wilayas<br>📞 <span id="footer-phone-display">0784811215</span></p>
+          <button class="f-cod-pill" onclick="showInfoModal('payment')">Paiement à la livraison uniquement</button>
+        </div>
+        <div>
+          <div class="f-h">Shop</div>
+          <ul class="f-links">
+            <li><a onclick="filterCat('Women');goShop()">Femmes</a></li>
+            <li><a onclick="filterCat('Footwear');goShop()">Chaussures</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="f-h">Help</div>
+          <ul class="f-links">
+            <li><a id="wa-fab-link" href="https://wa.me/213784811215" target="_blank">Contact</a></li>
+            <li><a href="https://www.instagram.com/ila_.collection" target="_blank">Instagram</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="f-h">Payment</div>
+          <ul class="f-links">
+            <li><a onclick="showInfoModal('payment')">Paiement à la livraison</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="f-bot">
+        <span>© 2024 ILA Collection — Bordj Bou Arreridj &nbsp;·&nbsp; <a onclick="openAdminLogin()" style="color:rgba(255,255,255,.15);cursor:pointer;text-decoration:none;font-size:9px" title="Admin">⚙</a></span>
+        <span>Made for confident women 💜</span>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<!-- DRAWERS & MODALS -->
+<div id="drawer-backdrop" onclick="closeAllDrawers()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:599"></div>
+
+<!-- CART DRAWER -->
+<div class="cart-drawer" id="cart-drawer">
+  <div class="cart-head"><h3>Your Cart</h3><button class="cart-close" onclick="closeCart()">×</button></div>
+  <div class="cart-items-list" id="cart-list"></div>
+  <div class="cart-foot" id="cart-foot"></div>
+</div>
+
+<!-- WISHLIST DRAWER -->
+<div class="cart-drawer" id="wish-drawer" style="z-index:601">
+  <div class="cart-head"><h3>Wishlist</h3><button class="cart-close" onclick="closeWishlist()">×</button></div>
+  <div class="cart-items-list" id="wish-list"></div>
+  <div class="cart-foot" id="wish-foot"></div>
+</div>
+
+<!-- ORDERS DRAWER -->
+<!-- PRODUCT MODAL -->
+<div class="modal-bg" id="prod-modal">
+  <div class="modal">
+    <button class="mclose" onclick="closeProdModal()">×</button>
+    <div id="modal-inner"></div>
+  </div>
+</div>
+
+<!-- IMAGE ZOOM LIGHTBOX -->
+<div id="img-lightbox" onclick="closeImgLightbox(event)">
+  <button id="img-lightbox-close" onclick="closeImgLightbox(event)">×</button>
+  <img id="img-lightbox-img" src="" alt="">
+</div>
+
+<a class="wa-fab" href="https://wa.me/213784811215" target="_blank" onclick="if(window.ILAPixel)ILAPixel.trackContact()">💬</a>
+
+<script>
+// ═══════════════════════════════════
+// OWNER
+// ═══════════════════════════════════
+const OWNER={email:'dar.mod.class1@gmail.com',password:'ILA_2002',name:'Islam Moula',isOwner:true};
+let STORE_PHONE=localStorage.getItem('ila_store_phone')||'0784811215';
+let STORE_PHONE_CLEAN=STORE_PHONE.replace(/[^0-9]/g,'');
+const OWNER_EMAIL_ORDERS='dar.mod.class1@gmail.com';
+
+// ═══════════════════════════════════
+// STATE
+// ═══════════════════════════════════
+let currentUser=null,cart=[],wishlist=[],activeCat='All',deliveryType='home';
+let pendingRegData=null,verifyCodeActual=null;
+let USERS_DB=[];
+let ORDERS_DB=[];
+
+// ═══════════════════════════════════
+// CART PERSISTENCE (localStorage)
+// ═══════════════════════════════════
+const CART_STORAGE_KEY='ila_cart';
+function saveCart(){
+  try{
+    localStorage.setItem(CART_STORAGE_KEY,JSON.stringify(cart));
+  }catch(e){
+    console.warn('⚠️ Could not save cart to localStorage',e);
+  }
+}
+function loadCart(){
+  try{
+    const raw=localStorage.getItem(CART_STORAGE_KEY);
+    if(raw){
+      const parsed=JSON.parse(raw);
+      if(Array.isArray(parsed))cart=parsed;
+    }
+  }catch(e){
+    console.warn('⚠️ Could not load cart from localStorage',e);
+    cart=[];
+  }
+}
+// Load any previously saved cart immediately so it's ready before first render
+loadCart();
+
+// ═══════════════════════════════════
+// WILAYA DELIVERY PRICING TABLE
+// ═══════════════════════════════════
+const WILAYA_DELIVERY = {
+  "Bordj Bou Arreridj":{desk:400,home:500},
+  "Alger":{desk:500,home:800},
+  "Setif":{desk:500,home:900},
+  "Chlef":{desk:500,home:900},
+  "Blida":{desk:500,home:900},
+  "Bouira":{desk:500,home:900},
+  "Tizi Ouzou":{desk:500,home:900},
+  "Constantine":{desk:500,home:900},
+  "Medea":{desk:500,home:900},
+  "Oran":{desk:500,home:900},
+  "Boumerdes":{desk:500,home:900},
+  "Tipaza":{desk:500,home:900},
+  "Ain Defla":{desk:500,home:900},
+  "Oum El Bouaghi":{desk:550,home:900},
+  "Batna":{desk:550,home:900},
+  "Bejaia":{desk:550,home:900},
+  "Tlemcen":{desk:550,home:900},
+  "Jijel":{desk:550,home:900},
+  "Skikda":{desk:550,home:900},
+  "Sidi Bel Abbes":{desk:550,home:900},
+  "Annaba":{desk:550,home:900},
+  "Mostaganem":{desk:550,home:900},
+  "M'Sila":{desk:550,home:900},
+  "Tissemsilt":{desk:550,home:900},
+  "Mila":{desk:550,home:900},
+  "Relizane":{desk:550,home:900},
+  "Djelfa":{desk:650,home:1000},
+  "Saida":{desk:650,home:1000},
+  "Guelma":{desk:650,home:1000},
+  "Mascara":{desk:650,home:1000},
+  "Khenchela":{desk:650,home:1000},
+  "Souk Ahras":{desk:650,home:1000},
+  "Ain Temouchent":{desk:650,home:1000},
+  "Biskra":{desk:700,home:1000},
+  "Tebessa":{desk:700,home:1000},
+  "El Tarf":{desk:700,home:1000},
+  "Laghouat":{desk:800,home:1100},
+  "Ouled Djellal":{desk:800,home:1100},
+  "Ouargla":{desk:900,home:1200},
+  "El Bayadh":{desk:900,home:1200},
+  "El Oued":{desk:900,home:1200},
+  "Ghardaia":{desk:900,home:1200},
+  "Touggourt":{desk:900,home:1200},
+  "El M'Ghair":{desk:900,home:1200},
+  "El Meniaa":{desk:1100,home:1400},
+  "Adrar":{desk:1200,home:1500},
+  "Bechar":{desk:1200,home:1500},
+  "Timimoun":{desk:1200,home:1500},
+  "Beni Abbes":{desk:1200,home:1500},
+  "In Salah":{desk:1200,home:1500},
+  "Tamanrasset":{desk:1600,home:2000},
+  "Tindouf":{desk:1600,home:2000},
+  "Illizi":{desk:2000,home:2200}
+};
+
+function getDeliveryPrice(wilaya, type){
+  if(!wilaya || !WILAYA_DELIVERY[wilaya]) return 0;
+  return type==='home' ? WILAYA_DELIVERY[wilaya].home : WILAYA_DELIVERY[wilaya].desk;
+}
+
+// ═══════════════════════════════════
+// ALL 58 WILAYAS + COMMUNES
+// ═══════════════════════════════════
+const WILAYAS={
+"Adrar":["Adrar","Tamest","Charouine","Reggane","In Zghmir","Tit","Ksar Kaddour","Tsabit","Timimoun","Ouled Said","Zaouiet Kounta","Aoulef","Timokten","Tinerkouk","Deldoul","Sali","Akabli","Metarfa","Ouled Aissa","Timiaouine","Fenoughil","Bouda","Aougrout","Talmine","Bordj Badji Mokhtar","In Salah","In Guezzam"],
+"Chlef":["Chlef","Teniet El Had","Ouled Fares","Ain Merane","El Karimia","Tadjna","Taougrite","Beni Haoua","Sobha","Harchoun","Zeboudja","Oued Goussine","Djendel","Oued Sly","Abou El Hassen","Chettia","Sidi Akkacha","Boukadir","Beni Rached","Talassa","Herenfa","Sendjas","Oum Drou","Bruira","Bouzghaia","Ain Hamara","Labiod Medjadja"],
+"Laghouat":["Laghouat","Ksar El Hirane","Bennhar","Hassi Delaa","Hassi R'Mel","Ain Mahdi","Tadjmout","Kheneg","Gueltet Sidi Saad","Oued Morra","Oued M'Zi","El Ghicha","Brida","Sidi Makhlouf","Taouiala","Tadjrouna","Aflou","El Assafia","Sebgag","Beidha","Ain Sidi Ali","El Houaita","Oued Serrat","Boudjedia"],
+"Oum El Bouaghi":["Oum El Bouaghi","Ain Beida","Ain M'lila","El Amiria","Souk Naamane","Ain Fakroun","Rahia","Belala","Ain Babouche","Behir Chergui","Djazia","Sigus","El Fedjoudj","Ouled Gacem","Ain Diss","Fkirina","Souk El Naesseur","Hanchir Toumghani","Bir Chouhada","El Harmilia","Dhalaa"],
+"Batna":["Batna","Ghassira","Maafa","Merouana","Seriana","Ayoun Assafir","Djerma","Bitam","Menaa","El Hassi","Oued Chaaba","Tilatou","Ain Touta","Chemora","Oued El Ma","Hidoussa","Ouled Sellem","Lazrou","Bouzina","Arris","El Madaen","Tigharghar","N'Gaous","Tkout","Ain Djasser","Barika","Boumagueur","Ksar Bellezma","Seggana","Ichmoul","Fesdis","El Korchi","Oued Taga","Tighanimine","Larbaa","Gosbat","Ouled Aouf","Zanat El Beida"],
+"Bejaia":["Bejaia","Amizour","Ferraoun","Taourirt Ighil","Chelata","Akbou","Ighil Ali","Tifra","Adekar","Amalou","Souk El Tenine","Melbou","Aokas","Beni Maouche","Darguina","Seddouk","Tazmalt","Ait Smail","Bouhamza","Beni Djellil","Fenaiel","Kendira","Timezrit","Boudjellil","El Kseur","Tibane","Tizi N'Berber","Chemini","Souk Oufella","Taklift","Ilmaten","Ouzellaguene","Leflaye","Kherrata","Draa El Kaid","Tamokra","Targua","Ighram","Sidi Aich","Bordj Mira","Oued Ghir","Beni Ksila"],
+"Biskra":["Biskra","Chetma","Ourlal","Tolga","Mlili","Foughala","Bordj Ben Azzouz","El Hadjeb","Ain Naga","El Outaya","El Kantara","Zeribet El Oued","Lioua","Lichana","Oumache","Branis","El Ghrous","Ain Zaatout","Sidi Okba","Djemorah","El Haouch","Mekhadma","Bouchagroun","Sidi Khalil","Ras El Miad","El Feidh"],
+"Bechar":["Bechar","Erg Ferradj","Meridja","Igli","Beni Ounif","Kenadza","El Ouata","Boukais","Mogheul","Lahmar","Taghit","Kerzaz","Mechraa Houari Boumediene","Oulad Khodeir","Abadla","Timoudi"],
+"Blida":["Blida","Chrea","El Affroun","Chiffa","Bougara","Soumaa","Meftah","Bouarfa","Oued Alleug","Beni Mered","Bni Tamou","Bouinan","El Afroun","Ain Romana","Djouab","Chebli","Ouled Yaich","Hammam Melouane","Ben Khellil","Souhane","Ouled Slama"],
+"Bouira":["Bouira","El Asnam","Maala","Haizer","Kadiria","Hanif","Ath Mansour","El Hachimia","Ain El Hadjar","Souk El Khemis","Mchedallah","Saharidj","Dirah","Guerrouma","Bordj Okhriss","El Adjiba","Raouraoua","Taguedit","Bechloul","Bouderbala","Aomar","Chorfa","Ain Lahdjar","Ridane","Sour El Ghouzlane","Ath Laziz","Lakhdaria","Ain Bessem","Aghbalou"],
+"Tamanrasset":["Tamanrasset","Abalessa","In Ghar","In Guezzam","Foggaret Ez Zoua","Tin Zaouatine","Tazrouk","Ideles"],
+"Tebessa":["Tebessa","Bir El Ater","Cheria","Stah Guentis","El Aouinet","Ain Zerga","Negrine","Bir Mokadem","Ouenza","El Ogla","Morsott","El Houidjbet","Bir Dheheb","Ain El Karma","Hammamet","Ferkane","El Ma Labiodh","Oum Ali","Thlidjene","El Meridj","Safsaf El Ouesra"],
+"Tlemcen":["Tlemcen","Nedroma","Maghnia","Ghazaouet","Sebdou","Bensekrane","Ouled Mimoun","Ain Tallout","Remchi","El Aricha","Chetouane","Mansourah","Bab El Assa","Dar Yaghmouracen","Fellaoucene","Azails","Souahlia","Boutlelis","Ain Fezza","Ouled Riyah","Hammam Boughrara","Sidi Djillali","Ain Ghoraba","Chouala","Youcef","Sidi Medjahed","Beni Boussaid","Hennaya","Ain Nebel","Ain Fetah","El Gor","Terny"],
+"Tiaret":["Tiaret","Sougueur","Ain Deheb","Ain El Hdid","Ain Kermes","Rechaiga","Naima","Mahdia","Rahouia","Mechraa Safa","Oued Lilli","Meghila","Guertoufa","Sidi Abderahmane","Bougara","Dahmouni","Hamadia","Ksar Chellala","Frenda","Ain Bouchekif","Sidi Ali Mellal","Ain Zarit","Beni Chaib","Madna","Medrissa","Tagdempt","Takhemaret","Tousnina","Serghine","Chehaida"],
+"Tizi Ouzou":["Tizi Ouzou","Ain El Hammam","Azazga","Beni Yenni","Boghni","Boudjima","Bouzeguene","Draa Ben Khedda","Draa El Mizan","Freha","Iferhounene","Iflissen","Illilten","Larbaa Nath Irathen","Maatkas","Makouda","Mekla","Michelet","Mizrana","Ouacifs","Ouadhia","Tizi Ghennif","Tizi Rached","Azeffoun","Tigzirt","Beni Aissi","Ait Toudert","Ait Yahia Moussa","Akerrou","Aghrib","Akbil","Iboudraren","Ouaguenoun"],
+"Alger":["Alger Centre","Sidi M'Hamed","El Madania","Belouizdad","Bab El Oued","Bologhine","Casbah","Oued Koriche","Birmandreis","El Biar","Bouzareah","Birkhadem","El Harrach","Baraki","Oued Smar","Bachdjerrah","Hussein Dey","Kouba","Bourouba","Dar El Beida","Bab Ezzouar","Ben Aknoun","Dely Ibrahim","Hammamet","Rais Hamidou","Mhammadia","Bordj El Kiffan","El Marsa","Ain Taya","Bordj El Bahri","Gue de Constantine","Eucalyptus","Birtouta","Tessala El Merdja","Saoula","Heraoua","Rouiba","Reghaïa","Douera","Cheraga","Ouled Fayet","Ain Benian","Staoueli","Zeralda","Mahelma","Rahmania","Souidania","Khraicia","Sidi Moussa","Mohammadia"],
+"Djelfa":["Djelfa","Moudjbara","El Idrissia","Ain Maabed","Sed Rahal","Faidh El Botma","Birine","Ain Chouhada","Oum Laadham","Hassi Bahbah","Ain El Ibel","Charef","Guettara","Selmana","Ain Oussera","Breze","El Khemis","Douis","Hassi El Euch","Messad","Guernini","Sidi Baizid","Benhar","Berhoum","El Azizia","Zaccar","El Maadid","Dar Chioukh","Beni Yakoub","Bouira Lahdeb"],
+"Jijel":["Jijel","El Aouana","Ziama Mansouriah","El Milia","Ain Makhlouf","Chekfa","Chahna","Beni Yadjis","Bouchegouf","Settara","El Ancer","Sidi Maarouf","Taher","Emir Abdelkader","Texenna","Djimla","Kaous","El Kennar Nouchfi","Ouled Yahia Khedrouche","Boudria Beni Yadjis","Ghebala"],
+"Setif":["Setif","Ain Arnat","Ain Azel","Ain El Kebira","Ain Legraj","Ain Oulmane","Ain Roua","Ain Sebt","Babor","Beni Aziz","Beni Chebana","Beni Fouda","Beni Hocine","Beni Mouhli","Beni Ourtilane","Bir El Arch","Bir Haddada","Bougaa","Boutaleb","Bousselam","Djemila","El Eulma","El Ouricia","Guidjel","Guenzet","Harbil","Hammam Guergour","Hammam Soukhna","Ksar El Abtal","Maoklane","Mezloug","Oued El Barad","Ouled Addouane","Ouled Sabor","Ouled Si Ahmed","Ras El Oued","Salah Bey","Seriana","Tachouda","Tala Ifacene","Zerzour"],
+"Saida":["Saida","Ain El Hadjar","Ain Soltane","Doui Thabet","El Hassasna","Hounet","Maamora","Moulay Larbi","Ouled Brahim","Sidi Ahmed","Sidi Boubekeur","Ain Sekhouna","Ouled Khaled"],
+"Skikda":["Skikda","Ain Bouziane","Ramdane Djamel","Emdjez Edchich","Cheraia","Zighoud Youcef","Ben Azzouz","Oued Zhour","Kerkera","Beni Bechir","El Hadaiek","Ain Cherchar","Collo","Tamalous","Beni Zid","El Marsa","Oued El Kheir","Salah Bouchaour","Bejou","Sidi Mezghiche","El Ghedir","Fil Fila","Oum Toub","Bekouche Lakhdar"],
+"Sidi Bel Abbes":["Sidi Bel Abbes","Tessala","Ain El Berd","Sidi Brahim","Moulay Slissen","Telagh","Ain Tindamine","Ben Badis","Marhoum","Sfissef","Sidi Chaib","Redjem Demouche","Bir El Hammam","Ras El Ma","Tabia","Ain Kada","Boukhanafis","Sidi Khaled","Dhaya","Tafissour","Tenira","Amarnas","Hassi Zahana","Sidi Ali Benyoub","Sidi Ali Chaib","Oued Sebaa","Zerouala","Mostefa Benbrahim"],
+"Annaba":["Annaba","El Bouni","El Hadjar","Chetaibi","Seraidi","Ain Berda","Berrahal","Cheurfa","Oued El Aneb","Treat"],
+"Guelma":["Guelma","Nechmaya","Ain Makhlouf","Ain Ben Beida","Bouati Mahmoud","Oued Zenati","Tamlouka","Belkheir","Helier","Ain Sandel","Bou Hamdane","Ain Larbi","Dahouara","Hammam Debagh","El Fedjouz","Hammam N'Bail","Roknia","Bendjerrah","Boumahra Ahmed","Khezaras","Ain Reggada","Ras El Agba","Tounana","Oued Sebt","Guelaat Bou Sbaa","Djebala Khemissi"],
+"Constantine":["Constantine","Hamma Bouziane","Didouche Mourad","El Khroub","Ibn Badis","Ain Abid","Zighoud Youcef","Ain Smara","Ouled Rahmoune","Ibn Ziad"],
+"Medea":["Medea","Ain Boucif","El Azizia","Berrouaghia","Ksar El Boukhari","El Omaria","Boghar","Tablat","Souk El Khemis","Ain Ouksir","El Hamdania","Ouled Antar","El Aissaouia","Ben Chicao","Sidi Zahar","Ouzera","Sidi Damed","Si Mahdjoub","Souagui","Sidi Naamane","Chahbounia","Aziz","Bouchrahil","Oued El Berdi","Rebaia","Oued Harbil","Bir Ben Laabed","Beni Slimane","Bouaichoune"],
+"Mostaganem":["Mostaganem","Stidia","Ain Nouichem","Bouguirat","Mesra","Ain Sidi Cherif","Sidi Ali","Sidi Ben Adda","Achaacha","Oued El Kheir","Sour","Mazagran","Ain Boudinar","Touahria","Fornaka"],
+"M'Sila":["M'Sila","Ain El Hadjel","Ain El Melh","Ain Fares","Beni Ilmane","Belaiba","Benzouh","Berhoum","Bir Foda","Boussaada","Chellal","Dehahna","El Hamel","El Houamed","Hammam Dhalaa","Khoubana","Maadid","Magra","Medjedel","Ouanougha","Ouled Addi Guebala","Ouled Attia","Ouled Madhi","Ouled Mansour","Oultene","Sidi Aissa","Sidi Ameur","Slim","Tamsa","Tarmount"],
+"Mascara":["Mascara","Ain Fekan","Maoussa","Bou Hanifia","El Keurt","Ghomri","Ghriss","Hacine","Makdha","Matemore","Mohammadia","Oggaz","Ras El Ain","Sidi Boussaid","Sidi Kada","Tizi","Tighennif","Zahana"],
+"Ouargla":["Ouargla","Ain Beida","El Borma","El Hedjira","Hassi Messaoud","Megarine","N'Goussa","Rouissat","Sidi Khouiled","Tebesbest","Temacine","Taibet","Touggourt"],
+"Oran":["Oran","Ain El Turck","Es Senia","Bir El Djir","Hassi Bounif","Misserghine","Boutlelis","Ain Biya","Oued Tlelat","Sidi Chami","Boufatis","Gdyel","Bethioua","Arzew","Marsat El Hadjaj","El Braya","Ben Freha","Ain El Kerma","Hassi Ben Okba","El Hassi"],
+"El Bayadh":["El Bayadh","Rogassa","Stitten","El Abiodh Sidi Cheikh","Brezina","Ghassoul","Cheguig","Mehara","Bou Semghoun","Arbaouet","Boualem","Sidi Ameur","El Bnoud","Kef El Ahmar","Krakda","El Khiter","Chellala","Sidi Tifour"],
+"Illizi":["Illizi","Djanet","In Amenas","Bordj Omar Driss"],
+"Bordj Bou Arreridj":["Bordj Bou Arreridj","Ain Taghrout","Bir Kasd Ali","Bordj Ghedir","Bordj Zemoura","Colla","Djaafra","El Achir","El Hamadia","El Main","El Ouchaich","Ghilassa","Hasnaoua","Khelil","Ksour","Mansourah","Medjana","Ouled Brahem","Ouled Dahmane","Ouled Ibrahim","Rabta","Ras El Oued","Ravane","Selsela","Tefreg","Teniet En Nasr","Tixter"],
+"Boumerdes":["Boumerdes","Boudouaou","Isser","Khemis El Khechna","Baghlia","Bordj Menaiel","Tidjelabine","Chabet El Ameur","Thenia","Beni Amrane","Si Mustapha","Larbatache","Naciria","Ain Taya","Corso","Zaatra","Afir","Timezrit","Hammedi","Ouled Moussa","Sidi Daoud","Dellys","Djinet","Zemmouri","Boudouaou El Bahri","Souk El Had"],
+"El Tarf":["El Tarf","Ben M'Hidi","El Aioun","Besbes","Boutheldja","Drea","Souarekh","Zerizer","Hammamet","Ain El Assel","Oum Teboul","Chihani","Ain Karma","Lac Des Oiseaux","Chefia","Echatt","El Kala","Raml Souk","Tonga"],
+"Tindouf":["Tindouf"],
+"Tissemsilt":["Tissemsilt","Ain Bouchekif","Ain Dzarit","Ain Lahdjar","Beni Chaib","Bordj El Emir Abdelkader","Bordj Bou Naama","Khemisti","Lardjem","Lazharia","Maacem","Ouled Bessem","Sidi Abed","Sidi Boutouchent","Sidi Lantri","Theniet El Had","Youssoufia"],
+"El Oued":["El Oued","Robbah","Bayadha","Nakhla","Guemar","Kouinine","Reguiba","Hamraia","Taghzout","Debila","Sidi Aoun","Trifaoui","Magrane","Beni Guecha","Ouled Ahmed","Still","Douar El Ma","Sidi Khelil","Hassi Khalifa","Taleb Larbi","Ourmas","Mih Ouensa","Ogla","Sidi Amrane"],
+"Khenchela":["Khenchela","Ain Touila","Bouhamama","Chechar","El Hamma","Ensigha","Kais","M'Sara","Mtoussa","Ouled Rechache","Remila","Tamza","Yabous","El Oueldja","Baghai"],
+"Souk Ahras":["Souk Ahras","M'Daourouch","Ouled Driss","Taoura","El Kherba","Ain Zana","Ain Soltane","Mechroha","Sedrata","Hanancha","Khedara","Ouled Moumen","Bir Bouhouche","Sidi Fredj","Drea"],
+"Tipaza":["Tipaza","Ain Tagourait","Attatba","Bou Ismail","Cherchell","Damous","Fouka","Gouraya","Hadjout","Kolea","Marengo","Meurad","Menaceur","Nador","Sidi Amar","Sidi Ghiles","Sidi Rached","Sidi Semiane","Ain Benian","Beni Milleuk","Douaouda","Larhat"],
+"Mila":["Mila","Ain Beida Harriche","Ain Mellouk","Ain Tine","Amira Arras","Benyahia Abderrahmane","Bouati Mahmoud","Bir Ould Khelifa","Bouhatem","Chelghoum Laid","Dehamcha","El Mechira","Ferdjioua","Grarem Gouga","Hamala","Minar Zarza","Oued Athmania","Oued Endja","Ouled Khlouf","Rouached","Sidi Khelifa","Sidi Merouane","Tassadane Haddada","Teleghma","Terrai Bainen","Tessala Lemtai","Zeghaia","Ahmed Rachedi","Ain Sebt","Yahia Beni Guecha"],
+"Ain Defla":["Ain Defla","Ain Lechiakh","Ain Soltane","Ain Torki","Arib","Bathia","Ben Allal","Bir Ouled Khelil","Bourached","Boumedfaa","Djemaa Ouled Chikh","El Abadia","El Amra","El Attaf","El Maine","Hammam Righa","Hoceinia","Jendel","Khemis Miliana","Lefhirat","Mekhatria","Miliana","Oued Chorfa","Oued El Djemaa","Oued Fodda","Rouina","Sidi Lakhdar","Tarik Ibn Ziad","Tiberkanine","Djelida"],
+"Naama":["Naama","Ain Sefra","Tiout","Sfissifa","Assela","Djeniene Bourezg","El Biod","Mekmene Ben Amar","Kasdir","Sidi Boumediene"],
+"Ain Temouchent":["Ain Temouchent","Ain El Arbaa","Ain Kihal","Ain Tolba","Beni Saf","Chaabat El Leham","El Amria","El Emir Abdelkader","El Malah","Hammam Bou Hadjar","Hassasna","Mesra","Oulhaca El Gheraba","Oued Berkèche","Oued El Kheir","Oued Sabah","Sidi Ben Adda","Sidi Boumediene","Sidi Safi","Tamzoura","Terga"],
+"Ghardaia":["Ghardaia","Berriane","Bounoura","Dhayet Bendhahoua","El Guerrara","El Menea","Guerrara","Mansoura","Metlili","Sebseb","Zelfana"],
+"Relizane":["Relizane","Ain Tarek","Ammi Moussa","Bendaoud","Beni Dergoun","Beni Zentis","El Guettena","El Hamadna","El Hassi","El Matmar","Hamri","Kalaa","Lahlef","Mazouna","Mendes","Oued El Djemaa","Oued Rhiou","Ouled Aiche","Ramka","Souk El Had","Yellel","Zemmoura","Zemmora","Sidi M'Hamed Ben Ali"],
+"Timimoun":["Timimoun","Ouled Said","Charouine","Ksar Kaddour","Deldoul","Aougrout","Talmine","Bouda"],
+"Bordj Badji Mokhtar":["Bordj Badji Mokhtar","Timiaouine"],
+"Ouled Djellal":["Ouled Djellal","Ras El Miad","Doucen","El Hadjira","Sidi Khaled","Bouchagroun","Foughala"],
+"Beni Abbes":["Beni Abbes","Erg Ferradj","Timoudi","Tabalbala","Kerzaz","Igli"],
+"In Salah":["In Salah","Foggaret Ez Zoua","In Ghar","Aoulef"],
+"In Guezzam":["In Guezzam","Tin Zaouatine"],
+"Touggourt":["Touggourt","Temacine","Megarine","Taibet","Nezla","Tebesbest"],
+"Djanet":["Djanet","Bordj El Haouasse"],
+"El M'Ghair":["El M'Ghair","Djamaa","Sidi Khellil","Merara","Oum Touyour","Barrara"],
+"El Menia":["El Menia","Hassi El Gara","Berezna","El Hdjira"]
+};
+
+// ═══════════════════════════════════
+// PRODUCTS
+// ═══════════════════════════════════
+
+// Products — stored as let so admin can add/delete at runtime
+let nextProductId = 10;
+// Products are loaded exclusively from Firebase/Firestore in real time (see fbListenProducts below).
+// This array starts empty on purpose — no hardcoded test/demo products.
+let PRODUCTS=[];
+
+const CATS=['All','Women','Footwear'];
+let currentCat='All';
+let selectedSizes={};
+let orderCounter=10004;
+
+// ═══════════════════════════════════
+// (Customer account/auth system removed — guest-only checkout)
+// ═══════════════════════════════════
+
+function enterSite(ud){
+  currentUser=ud;
+  // Hide splash if visible
+  const sp=document.getElementById('splash');
+  if(sp){sp.classList.remove('on');sp.style.display='none';}
+  document.getElementById('main-site').classList.add('on');
+  // Owner setup
+  const ownerNav=document.getElementById('owner-nav-link');
+  const ownerTag=document.getElementById('owner-tag-el');
+  const adminOwnerName=document.getElementById('admin-owner-name');
+  if(ud.isOwner){
+    if(ownerNav)ownerNav.style.display='block';
+    if(ownerTag)ownerTag.style.display='block';
+    if(adminOwnerName)adminOwnerName.textContent=ud.name;
+    // Close admin login overlay if open
+    const ov=document.getElementById('admin-login-overlay');
+    if(ov)ov.style.display='none';
+    // Go to admin
+    setTimeout(()=>{showPage('admin-page');renderAdmin('dash');},50);
+  } else {
+    if(ownerNav)ownerNav.style.display='none';
+    if(ownerTag)ownerTag.style.display='none';
+    renderCats();renderProducts();showPage('shop-page');
+  }
+}
+function logOut(){
+  currentUser=null;cart=[];wishlist=[];
+  saveCart();
+  closeAllDrawers();
+  // ✅ FIX: Go back to splash instead of enterSite(guest)
+  // This fixes mobile issue where logout → can't login again
+  const sp=document.getElementById('splash');
+  const ms=document.getElementById('main-site');
+  if(ms){ms.classList.remove('on');ms.style.display='';}
+  if(sp){sp.style.display='flex';sp.classList.add('on');}
+  // Reset nav
+  const ownerNav=document.getElementById('owner-nav-link');
+  const ownerTag=document.getElementById('owner-tag-el');
+  if(ownerNav)ownerNav.style.display='none';
+  if(ownerTag)ownerTag.style.display='none';
+  // Clear any stored session
+  try{
+    localStorage.removeItem('ila_admin_email');
+    localStorage.removeItem('ila_admin_pass');
+    sessionStorage.clear();
+  }catch(e){}
+}
+
+// ═══════════════════════════════════
+// PRODUCTS & SHOP
+// ═══════════════════════════════════
+function renderCats(){
+  document.getElementById('cat-strip').innerHTML=CATS.map(c=>`<button class="cat-chip${c===activeCat?' act':''}" onclick="filterCat('${c}')">${c}</button>`).join('');
+}
+function filterCat(c){currentCat=c;activeCat=c;document.getElementById('shop-title').textContent=c==='All'?'La Collection':c;renderCats();renderProducts();}
+function renderProducts(){
+  const list=activeCat==='All'?PRODUCTS:PRODUCTS.filter(p=>p.cat===activeCat);
+  document.getElementById('prod-grid').innerHTML=list.map(p=>{
+    const inW=wishlist.some(w=>w.id===p.id);
+    const extraImgs=Array.isArray(p.images)?p.images.filter(im=>im&&im!==p.img):[];
+    const photoGridHTML=extraImgs.length>0?`<div class="pcard-photo-grid" onclick="event.stopPropagation();openProd(${p.id})">${extraImgs.slice(0,4).map(im=>`<img src="${im}" alt="${p.name}" loading="lazy">`).join('')}</div>`:'';
+    return`<div class="pcard">
+      ${p.badge?`<div class="pcard-badge ${p.badge==='Sale'?'sale':p.badge==='Promotion'?'promo':''}">${p.badge}</div>`:''}
+      <button class="pcard-wish${inW?' on':''}" onclick="event.stopPropagation();toggleWish(${p.id},this)">♡</button>
+      <div class="pcard-img" onclick="openProd(${p.id})"><img src="${p.img}" alt="${p.name}" loading="lazy"></div>
+      ${photoGridHTML}
+      <button class="pcard-view" onclick="event.stopPropagation();openProd(${p.id})">VOIR LE PRODUIT →</button>
+      <div class="pcard-info" onclick="openProd(${p.id})">
+        <div class="pcard-cat">${p.cat}</div>
+        <div class="pcard-name">${p.name}</div>
+        <div class="pcard-bot">
+          <div class="pcard-price">${p.price.toLocaleString()} DA</div>
+          <button class="qadd" title="Ajout rapide" onclick="event.stopPropagation();quickAdd(${p.id})">+</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  renderPromoBar();
+}
+// PROMO BAR — bigger scrolling strip built live from PRODUCTS: photos only, no text.
+// Loop is seamless and moves at a constant speed with NO pause/stutter, no matter how many products exist.
+function renderPromoBar(){
+  const track=document.getElementById('promo-bar-track');
+  if(!track)return;
+  if(!PRODUCTS||PRODUCTS.length===0){
+    track.className='promo-bar-track';
+    track.style.animation='none';
+    track.innerHTML='';
+    return;
+  }
+  const itemHTML=(p)=>`<span class="promo-bar-item" style="cursor:pointer" onclick="openProd(${p.id})"><img src="${p.img}" alt="${p.name}" width="150" height="190" onerror="this.closest('.promo-bar-item').style.display='none'"></span>`;
+  const baseSeq=PRODUCTS.map(itemHTML).join('');
+  // Repeat the base sequence enough times to comfortably fill more than 2 screens,
+  // so the loop never runs out of images even with very few products.
+  const approxItemWidth=window.innerWidth<640?100:150;
+  const repeats=Math.max(1,Math.ceil((window.innerWidth*2.5)/(PRODUCTS.length*approxItemWidth)));
+  let seq='';
+  for(let i=0;i<repeats;i++) seq+=baseSeq;
+  // Two identical copies back to back: when the first fully scrolls past, the
+  // second is in the exact same spot the first started in — a perfectly seamless loop.
+  track.innerHTML=seq+seq;
+  track.className='promo-bar-track';
+  requestAnimationFrame(function(){
+    const halfWidth=track.scrollWidth/2;
+    const speedPxPerSecond=55; // constant scroll speed, never speeds up/slows down
+    const duration=Math.max(6,halfWidth/speedPxPerSecond);
+    track.style.animation='none';
+    // force reflow so the new animation restarts cleanly
+    void track.offsetWidth;
+    track.style.animation=`promoBarScroll ${duration}s linear infinite`;
+  });
+}
+function openProd(id){
+  const p=PRODUCTS.find(x=>x.id===id);if(!p)return;
+  selectedSizes[id]=p.sizes[0];
+  // ── META PIXEL: ViewContent ──────────────────────────────
+  if(window.ILAPixel) ILAPixel.trackViewContent(p);
+  // Gallery: main image + secondary images (thumbnails)
+  const gallery=[p.img,...(Array.isArray(p.images)?p.images.filter(im=>im&&im!==p.img):[])];
+  window._pmGallery=gallery; window._pmGalleryIdx=0;
+  const dotsHTML=gallery.length>1?`<div class="pm-dots">${gallery.map((im,i)=>`<span class="pm-dot${i===0?' sel':''}" data-idx="${i}" onclick="goToGalleryImg(null,${i})"></span>`).join('')}</div>`:'';
+  const arrowsHTML=gallery.length>1?`<button class="pm-arrow prev" onclick="event.stopPropagation();shiftGalleryImg(-1)">‹</button><button class="pm-arrow next" onclick="event.stopPropagation();shiftGalleryImg(1)">›</button>`:'';
+  document.getElementById('modal-inner').innerHTML=`
+    <div class="modal-imgs">
+      ${arrowsHTML}
+      <img id="pm-main-img" src="${p.img}" alt="${p.name}" onclick="openImgLightbox(this.src)">
+      ${dotsHTML}
+    </div>
+    <div class="modal-detail">
+      <div class="md-cat">${p.cat}</div>
+      <div class="md-name">${p.name}</div>
+      <div class="md-price">${p.price.toLocaleString()} DA</div>
+      <div class="pay-info-box">💵 Paiement <strong>à la livraison</strong> — en espèces au livreur</div>
+      <div class="order-box">
+        ${p.colors&&p.colors.length>0?`<div class="md-label">Couleur</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">${p.colors.map(col=>`<button type="button" class="color-rect" title="${col.name}" data-img="${col.img?col.img.replace(/"/g,'&quot;'):''}" onclick="selColor(this)"><span class="cdot" style="background:${col.hex}"></span>${col.name}${col.img?' 📷':''}</button>`).join('')}</div>`:''}
+        <div class="md-label">Taille</div>
+        <div class="sizes-row">${p.sizes.map((s,i)=>`<div class="sz${i===0?' sel':''}" onclick="selSz(this,'${s}',${id})">${s}</div>`).join('')}</div>
+        <div class="md-label">Quantité</div>
+        <div class="qty-row" style="margin-bottom:0">
+          <button class="qty-btn" onclick="adjQty(-1)">−</button>
+          <div class="qty-val" id="m-qty">1</div>
+          <button class="qty-btn" onclick="adjQty(1)">+</button>
+        </div>
+      </div>
+      <button class="add-big" onclick="addFromModal(${id})">🛒 Ajouter au Panier</button>
+      <p style="font-size:11px;color:var(--muted);line-height:1.8;margin-top:10px">${p.desc}</p>
+      <button class="order-now-btn" onclick="orderNow(${id})">✨ Commander Maintenant</button>
+    </div>`;
+  document.getElementById('prod-modal').classList.add('open');
+  startGalleryAutoCycle();
+}
+// Auto-cycle the main product image through the gallery while the customer is
+// browsing the product (stops when the modal closes, restarts cleanly on manual nav).
+function startGalleryAutoCycle(){
+  stopGalleryAutoCycle();
+  const gallery=window._pmGallery||[];
+  if(gallery.length<2)return;
+  window._pmAutoTimer=setInterval(function(){
+    shiftGalleryImg(1);
+  },3200);
+}
+function stopGalleryAutoCycle(){
+  if(window._pmAutoTimer){clearInterval(window._pmAutoTimer);window._pmAutoTimer=null;}
+}
+function selSz(el,s,id){el.closest('.sizes-row').querySelectorAll('.sz').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');selectedSizes[id]=s;}
+// Gallery navigation: dot indicators + prev/next arrows (visual addition, same image data as thumbnails used before)
+function goToGalleryImg(id,i){
+  const gallery=window._pmGallery||[];
+  if(!gallery[i])return;
+  window._pmGalleryIdx=i;
+  const main=document.getElementById('pm-main-img');
+  if(main)main.src=gallery[i];
+  document.querySelectorAll('.color-rect').forEach(x=>x.classList.remove('sel'));
+  document.querySelectorAll('.pm-dot').forEach((d,idx)=>d.classList.toggle('sel',idx===i));
+  startGalleryAutoCycle();
+}
+function shiftGalleryImg(dir){
+  const gallery=window._pmGallery||[];
+  if(!gallery.length)return;
+  let i=((window._pmGalleryIdx||0)+dir+gallery.length)%gallery.length;
+  goToGalleryImg(null,i);
+}
+// Swap the large product image when a secondary thumbnail is clicked (kept for compatibility)
+function selThumb(el,src){
+  const main=document.getElementById('pm-main-img');
+  if(main)main.src=src;
+  el.parentNode.querySelectorAll('.pm-thumb').forEach(x=>{x.classList.remove('sel');x.style.borderColor='var(--border)';});
+  el.classList.add('sel');el.style.borderColor='var(--pk)';
+}
+// Swap the large product image to match the selected color ONLY when a real, dedicated
+// photo was uploaded for that color. If no photo exists, we simply mark the swatch as
+// selected — we never fake-tint the whole photo (background, floor, etc.), since that
+// looked unprofessional and misrepresented the product.
+function selColor(el){
+  el.parentNode.querySelectorAll('.color-rect').forEach(x=>x.classList.remove('sel'));
+  el.classList.add('sel');
+  const img=el.getAttribute('data-img');
+  const main=document.getElementById('pm-main-img');
+  if(img){
+    if(main)main.src=img;
+    document.querySelectorAll('.pm-dot').forEach(x=>x.classList.remove('sel'));
+    startGalleryAutoCycle();
+  }
+}
+function adjQty(d){const el=document.getElementById('m-qty');let v=parseInt(el.textContent)+d;if(v<1)v=1;el.textContent=v;}
+function closeProdModal(){document.getElementById('prod-modal').classList.remove('open');stopGalleryAutoCycle();}
+// Fullscreen zoom lightbox for product images
+function openImgLightbox(src){
+  document.getElementById('img-lightbox-img').src=src;
+  document.getElementById('img-lightbox').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeImgLightbox(e){
+  if(e && e.target && e.target.id==='img-lightbox-img')return; // clicking image itself does nothing extra
+  document.getElementById('img-lightbox').classList.remove('open');
+  document.getElementById('img-lightbox-img').src='';
+  document.body.style.overflow='';
+}
+function orderNow(id){
+  const p=PRODUCTS.find(x=>x.id===id);
+  const qty=parseInt(document.getElementById('m-qty').textContent);
+  const sz=selectedSizes[id]||p.sizes[0];
+  const selColorEl=document.querySelector('.color-rect.sel');
+  const color=selColorEl?selColorEl.getAttribute('title'):'';
+  for(let i=0;i<qty;i++)addItem(p,sz,color);
+  closeProdModal();
+  goCheckout();
+}
+function addFromModal(id){
+  const p=PRODUCTS.find(x=>x.id===id);
+  const qty=parseInt(document.getElementById('m-qty').textContent);
+  const sz=selectedSizes[id]||p.sizes[0];
+  for(let i=0;i<qty;i++)addItem(p,sz);
+  closeProdModal();openCart();
+}
+function quickAdd(id){const p=PRODUCTS.find(x=>x.id===id);addItem(p,p.sizes[0]);}
+function addItem(p,sz,color){
+  const ex=cart.find(c=>c.id===p.id&&c.size===sz);
+  if(ex)ex.qty++;
+  else cart.push({
+    id:p.id,
+    name:p.name,
+    img:p.img||'',
+    price:p.price,
+    cat:p.cat,
+    sizes:p.sizes,
+    size:sz,
+    color:color||'',
+    qty:1
+  });
+  // ── META PIXEL: AddToCart ────────────────────────────────
+  if(window.ILAPixel) ILAPixel.trackAddToCart(p, sz, 1);
+  updateCount();
+}
+function updateCount(){
+  document.getElementById('cart-count').textContent=cart.reduce((a,c)=>a+c.qty,0);
+  const wc=document.getElementById('wish-count');if(wc)wc.textContent=wishlist.length;
+  const uwc=document.getElementById('ud-wish-count');if(uwc)uwc.textContent=wishlist.length;
+  saveCart();
+}
+function toggleWish(id,btn){
+  const p=PRODUCTS.find(x=>x.id===id);
+  const i=wishlist.findIndex(w=>w.id===id);
+  if(i>-1){wishlist.splice(i,1);btn.classList.remove('on');}else{wishlist.push(p);btn.classList.add('on');}
+  updateCount();
+}
+
+// ═══════════════════════════════════
+// CART
+// ═══════════════════════════════════
+function openCart(){
+  const list=document.getElementById('cart-list');
+  const foot=document.getElementById('cart-foot');
+  if(!cart.length){
+    list.innerHTML='<div style="padding:36px;text-align:center;color:var(--muted);font-size:12px">Votre panier est vide</div>';
+    foot.innerHTML='';
+  } else {
+    list.innerHTML=cart.map((c,i)=>`
+      <div class="ci">
+        <img src="${c.img}" alt="${c.name}">
+        <div class="ci-info">
+          <div class="ci-name">${c.name}</div>
+          <div class="ci-meta">Taille: ${c.size} · Qté: ${c.qty}</div>
+          <div class="ci-price">${(c.price*c.qty).toLocaleString()} DA</div>
+        </div>
+        <button class="ci-del" onclick="removeCart(${i})">✕</button>
+      </div>`).join('');
+    const total=cart.reduce((a,c)=>a+c.price*c.qty,0);
+    foot.innerHTML=`
+      <div class="ct-row"><span>Sous-total</span><span>${total.toLocaleString()} DA</span></div>
+      <div class="bm-note-box">💵 Paiement <strong>à la livraison</strong> — en espèces au livreur</div>
+      <button class="co-btn" onclick="closeCart();goCheckout()">Commander →</button>`;
+  }
+  document.getElementById('cart-drawer').classList.add('open');
+  document.getElementById('drawer-backdrop').style.display='block';
+}
+function closeCart(){document.getElementById('cart-drawer').classList.remove('open');document.getElementById('drawer-backdrop').style.display='none';}
+function removeCart(i){cart.splice(i,1);updateCount();openCart();}
+
+// ═══════════════════════════════════
+// WISHLIST
+// ═══════════════════════════════════
+function openWishlistPanel(){
+  const list=document.getElementById('wish-list');
+  const foot=document.getElementById('wish-foot');
+  if(!wishlist.length){
+    list.innerHTML='<div style="padding:36px;text-align:center;color:var(--muted);font-size:12px">Votre wishlist est vide</div>';
+    foot.innerHTML='';
+  } else {
+    list.innerHTML=wishlist.map((p,i)=>`
+      <div class="ci">
+        <img src="${p.img}" alt="${p.name}">
+        <div class="ci-info">
+          <div class="ci-name">${p.name}</div>
+          <div class="ci-meta">${p.cat}</div>
+          <div class="ci-price">${p.price.toLocaleString()} DA</div>
+        </div>
+        <button class="ci-del" onclick="removeWish(${i})">✕</button>
+      </div>`).join('');
+    foot.innerHTML=`<button class="co-btn" onclick="wishlist.forEach(p=>addItem(p,p.sizes[0]));closeWishlist();openCart()">Tout ajouter au panier</button>`;
+  }
+  document.getElementById('wish-drawer').classList.add('open');
+  document.getElementById('drawer-backdrop').style.display='block';
+}
+function closeWishlist(){document.getElementById('wish-drawer').classList.remove('open');document.getElementById('drawer-backdrop').style.display='none';}
+function removeWish(i){wishlist.splice(i,1);updateCount();openWishlistPanel();}
+
+// ═══════════════════════════════════
+// MY ORDERS
+// ═══════════════════════════════════
+// ═══════════════════════════════════
+// CHECKOUT
+// ═══════════════════════════════════
+function goCheckout(){
+  // ── META PIXEL: InitiateCheckout ─────────────────────────
+  if(window.ILAPixel){
+    const total=cart.reduce((a,c)=>a+c.price*c.qty,0);
+    ILAPixel.trackInitiateCheckout(cart, total);
+  }
+  showPage('checkout-page');
+  const sel=document.getElementById('co-wilaya');
+  sel.innerHTML='<option value="">— Sélectionner une Wilaya —</option>';
+  Object.keys(WILAYAS).sort().forEach(w=>{const o=document.createElement('option');o.value=w;o.textContent=w;sel.appendChild(o);});
+  if(currentUser){
+    const fn=document.getElementById('co-fn');const em=document.getElementById('co-em');const ph=document.getElementById('co-ph');
+    if(fn&&currentUser.name){const parts=currentUser.name.split(' ');fn.value=parts[0];const ln=document.getElementById('co-ln');if(ln&&parts[1])ln.value=parts.slice(1).join(' ');}
+    if(em&&currentUser.email&&!currentUser.email.includes('@instagram'))em.value=currentUser.email;
+    if(ph&&currentUser.phone)ph.value=currentUser.phone;
+  }
+  deliveryType='home';
+  document.querySelectorAll('.del-opt').forEach((o,i)=>{o.classList.toggle('sel',i===0);});
+  // Show notice that wilaya must be selected
+  const notice=document.getElementById('delivery-notice');
+  if(notice)notice.style.display='block';
+  const homePrice=document.getElementById('del-home-price');
+  const deskPrice=document.getElementById('del-desk-price');
+  if(homePrice)homePrice.textContent='— DA';
+  if(deskPrice)deskPrice.textContent='— DA';
+  renderSidebar();
+}
+function loadBal(){
+  const w=document.getElementById('co-wilaya').value;
+  const communeSelect=document.getElementById('co-commune');
+  communeSelect.innerHTML='<option value="">— Sélectionner une Commune —</option>';
+  if(w&&WILAYAS[w]){WILAYAS[w].forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;communeSelect.appendChild(o);});}
+  // Update delivery price display
+  const notice=document.getElementById('delivery-notice');
+  const homePrice=document.getElementById('del-home-price');
+  const deskPrice=document.getElementById('del-desk-price');
+  if(homePrice && deskPrice){
+    if(w && WILAYA_DELIVERY[w]){
+      homePrice.textContent=WILAYA_DELIVERY[w].home.toLocaleString()+' DA';
+      deskPrice.textContent=WILAYA_DELIVERY[w].desk.toLocaleString()+' DA';
+      if(notice) notice.style.display='none';
+    } else {
+      homePrice.textContent='— DA';
+      deskPrice.textContent='— DA';
+      if(notice) notice.style.display='block';
+    }
+  }
+  renderSidebar();
+}
+function setDel(t,el){deliveryType=t;document.querySelectorAll('.del-opt').forEach(o=>o.classList.remove('sel'));el.classList.add('sel');renderSidebar();}
+function renderSidebar(){
+  const total=cart.reduce((a,c)=>a+c.price*c.qty,0);
+  const w=document.getElementById('co-wilaya')?document.getElementById('co-wilaya').value:'';
+  const delivery=getDeliveryPrice(w, deliveryType);
+  const grand=total+(delivery||0);
+  const deliveryLabel=delivery>0?delivery.toLocaleString()+' DA':'— (sélectionnez une wilaya)';
+
+  const sb=document.getElementById('order-sidebar');if(!sb)return;
+  sb.innerHTML=`<div class="order-sb">
+    <div class="os-title">Résumé de Commande</div>
+    ${cart.map(c=>`<div class="os-item">
+      <img class="os-img" src="${c.img||''}" onerror="this.style.background='var(--sand)'">
+      <div><div class="os-name">${c.name}</div><div class="os-sub">T: ${c.size} · Qté: ${c.qty}</div></div>
+      <div class="os-price">${(c.price*c.qty).toLocaleString()} DA</div>
+    </div>`).join('')}
+    <div class="os-div"></div>
+    <div class="os-row"><span>Sous-total</span><span>${total.toLocaleString()} DA</span></div>
+    <div class="os-row"><span>Livraison (${deliveryType==='home'?'Domicile':'Stop Desk'})</span><span>${deliveryLabel}</span></div>
+    <div class="os-row big"><span>TOTAL</span><span style="color:var(--pk)">${delivery>0?grand.toLocaleString()+' DA':'—'}</span></div>
+    <div class="pay-box">
+      <div class="pb-h">Méthode de Paiement</div>
+      <div style="font-size:12px;line-height:1.8;color:var(--muted)">💵 Paiement <strong style="color:var(--pk)">à la livraison</strong> — en espèces au livreur.</div>
+    </div>
+  </div>`;
+}
+function placeOrder(){
+  const fn=document.getElementById('co-fn').value.trim();
+  const ln=document.getElementById('co-ln').value.trim();
+  const ph=document.getElementById('co-ph').value.trim().replace(/\s/g,'');
+  const w=document.getElementById('co-wilaya').value;
+  const commune=document.getElementById('co-commune').value;
+  const ref=document.getElementById('co-ref').value.trim();
+  const em=document.getElementById('co-em').value.trim();
+  const notes=document.getElementById('co-notes').value.trim();
+  const addr=document.getElementById('co-addr').value.trim();
+  if(!fn){alert('Veuillez entrer votre prénom.');return;}
+  if(!ph){alert('Veuillez entrer votre numéro de téléphone.');return;}
+  if(!/^(0)(5|6|7)[0-9]{8}$/.test(ph)){alert('Numéro de téléphone invalide. Format: 07XX XXX XXX');return;}
+  if(!w){alert('Veuillez sélectionner votre wilaya.');return;}
+
+  const total=cart.reduce((a,c)=>a+c.price*c.qty,0);
+  const delivery=getDeliveryPrice(w, deliveryType);
+  if(delivery===0){alert('Prix de livraison non disponible pour cette wilaya.');return;}
+  const grand=total+delivery;
+  const orderRef='ILA-'+orderCounter++;
+  const orderDate=new Date().toLocaleDateString('fr-DZ');
+
+  // Full product items with images stored
+  const orderItems=cart.map(c=>({
+    productId: c.id,
+    productName: c.name,
+    productImage: c.img||'',
+    productPrice: c.price,
+    quantity: c.qty,
+    selectedSize: c.size||'',
+    selectedColor: c.color||''
+  }));
+
+  const order={
+    ref:orderRef,name:fn+' '+ln,phone:ph,email:em||currentUser?.email||'',
+    wilaya:w,commune:commune||'',addr,items:cart.reduce((a,c)=>a+c.qty,0),
+    products:cart.map(c=>c.name+' ('+c.size+' x'+c.qty+')').join(', '),
+    orderItems:orderItems,
+    total:grand,delivery:deliveryType,deliveryPrice:delivery,bmRef:ref,notes,
+    status:'Pending',date:orderDate,source:currentUser?.source||'direct'
+  };
+  ORDERS_DB.push(order);
+
+  // ── FIREBASE SAVE + META PIXEL PURCHASE ──────────────────
+  // CRITICAL: Purchase event fires ONLY after Firestore write succeeds
+  // If Firebase fails → NO Purchase event fired
+  if(typeof window.fbSaveOrder==='function'){
+    window.fbSaveOrder(order).then(function(fbId){
+      if(fbId){
+        // ✅ Firestore write confirmed — safe to fire Purchase
+        if(window.ILAPixel) ILAPixel.trackPurchase(order);
+      }
+      // If fbId is null → Firebase failed → Purchase NOT fired
+    }).catch(function(){
+      // Firebase error → Purchase NOT fired
+    });
+  } else {
+    // No Firebase → fire Purchase anyway (offline mode)
+    if(window.ILAPixel) ILAPixel.trackPurchase(order);
+  }
+
+  // Send order email to owner
+  sendOrderEmail(order);
+
+  // Show success page
+  showPage('success-page');
+  document.getElementById('succ-ref-display').innerHTML='Référence: <strong>'+orderRef+'</strong>';
+  document.getElementById('succ-bm-display').innerHTML=
+    '<strong>Détails Commande:</strong><br>'+
+    '💵 Paiement <strong style="color:var(--pk)">à la livraison</strong> — en espèces au livreur<br>'+
+    '📦 Livraison: <strong>'+w+(commune?', '+commune:'')+'</strong><br>'+
+    '🚚 Mode: <strong>'+(deliveryType==='home'?'Domicile':'Stop Desk')+' — '+delivery.toLocaleString()+' DA</strong>';
+  cart=[];updateCount();
+}
+
+function sendOrderEmail(order){
+  if(typeof emailjs==='undefined')return;
+  emailjs.send("service_ml71p4h","template_80uzu07",{
+    to_email:OWNER_EMAIL_ORDERS,
+    email:OWNER_EMAIL_ORDERS,
+    to_name:"Islam Moula",
+    code:"NOUVELLE COMMANDE: "+order.ref,
+    site_name:"ILA Collection",
+    subject:"Nouvelle commande "+order.ref,
+    order_ref:order.ref,
+    client_name:order.name,
+    client_phone:order.phone,
+    client_email:order.email,
+    wilaya:order.wilaya+' - '+order.commune,
+    products:order.products,
+    total:order.total.toLocaleString()+' DA',
+    payment_method:'Paiement à la livraison',
+    delivery:(order.delivery==='home'?'Domicile':'Stop Desk')+' — '+(order.deliveryPrice||0).toLocaleString()+' DA',
+    notes:order.notes||'Aucune note'
+  }).catch(()=>{});
+}
+
+// ═══════════════════════════════════
+// ADMIN
+// ═══════════════════════════════════
+function showPage(id){
+  ['shop-page','checkout-page','success-page','admin-page'].forEach(p=>{const el=document.getElementById(p);if(el)el.style.display='none';});
+  const t=document.getElementById(id);if(t){t.style.display='block';window.scrollTo(0,0);}
+  // ── META PIXEL: PageView on SPA navigation ───────────────
+  const pageNames={'shop-page':'Shop','checkout-page':'Checkout','success-page':'Order Success','admin-page':'Admin'};
+  if(window.ILAPixel && pageNames[id]) ILAPixel.trackPageView(pageNames[id]);
+}
+function goShop(){showPage('shop-page');}
+function adminNav(sec,el){document.querySelectorAll('.admin-nav-item').forEach(i=>i.classList.remove('on'));el.classList.add('on');renderAdmin(sec);}
+function renderAdmin(sec){
+  if(!currentUser?.isOwner){document.getElementById('admin-content').innerHTML='<div style="padding:40px;color:var(--red)">Accès refusé.</div>';return;}
+  const c=document.getElementById('admin-content');
+  if(sec==='dash'){
+    const totalRev=ORDERS_DB.reduce((a,o)=>a+o.total,0);
+    const pending=ORDERS_DB.filter(o=>o.status==='Pending').length;
+    c.innerHTML=`<div class="admin-h">📊 Dashboard</div>
+    <div class="stats4">
+      <div class="sbox"><div class="sb-l">Commandes</div><div class="sb-v">${ORDERS_DB.length}</div><div class="sb-c">Total</div></div>
+      <div class="sbox"><div class="sb-l">En Attente</div><div class="sb-v" style="color:var(--red)">${pending}</div><div class="sb-c">À traiter</div></div>
+      <div class="sbox"><div class="sb-l">Clients</div><div class="sb-v">${USERS_DB.length}</div><div class="sb-c">Inscrits</div></div>
+      <div class="sbox"><div class="sb-l">Revenus</div><div class="sb-v">${Math.round(totalRev/1000)}K</div><div class="sb-c">DA Total</div></div>
+    </div>
+    <div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:12px">Dernières Commandes</div>
+    <div class="atbl"><table>
+      <tr><th>Réf</th><th>Client</th><th>Wilaya</th><th>Total</th><th>Statut</th><th>Action</th></tr>
+      ${ORDERS_DB.slice(-10).reverse().map(o=>`<tr>
+        <td><strong>${o.ref}</strong></td>
+        <td>${o.name}<br><span style="font-size:10px;color:var(--muted)">${o.phone}</span></td>
+        <td>${o.wilaya}</td>
+        <td style="color:var(--pk);font-weight:600">${o.total.toLocaleString()} DA</td>
+        <td><span class="tag ${o.status==='Pending'?'t-pend':o.status==='Confirmed'?'t-conf':'t-delv'}">${o.status}</span></td>
+        <td><button class="act-btn" onclick="updateStatus('${o.ref}','Confirmed')">✓</button> <button class="act-btn" onclick="updateStatus('${o.ref}','Delivered')">🚚</button></td>
+      </tr>`).join('')}
+    </table></div>`;
+  } else if(sec==='orders'){
+    c.innerHTML=`<div class="admin-h">📦 Toutes les Commandes</div>
+    <div style="margin-bottom:14px;display:flex;gap:8px">
+      <button class="act-btn" onclick="filterOrders('all')">Toutes (${ORDERS_DB.length})</button>
+      <button class="act-btn" onclick="filterOrders('Pending')">En attente (${ORDERS_DB.filter(o=>o.status==='Pending').length})</button>
+      <button class="act-btn" onclick="filterOrders('Confirmed')">Confirmées</button>
+      <button class="act-btn" onclick="filterOrders('Delivered')">Livrées</button>
+    </div>
+    <div id="orders-table-wrap"></div>`;
+    filterOrders('all');
+  } else if(sec==='users'){
+    const allUsers=[{name:'Islam Moula',email:OWNER.email,phone:'—',source:'email',role:'Owner',orders:ORDERS_DB.length},...USERS_DB.map(u=>({...u,role:'Customer',orders:ORDERS_DB.filter(o=>o.email===u.email).length}))];
+    c.innerHTML=`<div class="admin-h">👥 Clients (${allUsers.length})</div>
+    <div class="atbl"><table>
+      <tr><th>Nom</th><th>Email</th><th>Téléphone</th><th>Source</th><th>Commandes</th><th>Rôle</th></tr>
+      ${allUsers.map(u=>`<tr>
+        <td><strong>${u.name}</strong></td>
+        <td style="font-size:11px">${u.email}</td>
+        <td style="font-size:11px">${u.phone||'—'}</td>
+        <td><span class="tag t-conf">${u.source||'email'}</span></td>
+        <td style="text-align:center">${u.orders}</td>
+        <td><span class="tag ${u.role==='Owner'?'t-delv':'t-pend'}">${u.role}</span></td>
+      </tr>`).join('')}
+    </table></div>`;
+  } else if(sec==='settings'){
+    c.innerHTML=`<div class="admin-h">⚙️ Paramètres Admin</div>
+    <div style="max-width:500px">
+      <div style="background:#fff;border:1px solid var(--border);padding:24px;margin-bottom:20px">
+        <div style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--pk);margin-bottom:18px;border-bottom:2px solid var(--border);padding-bottom:8px">🔐 Changer Email & Mot de passe Admin</div>
+        <div style="background:#fff8f0;border:1px solid #f5c07a;padding:10px 14px;margin-bottom:14px;font-size:11px;color:#a0622a">
+          ⚠️ Entrez votre mot de passe actuel pour confirmer les modifications
+        </div>
+        <div style="margin-bottom:12px">
+          <div style="font-size:9px;letter-spacing:1px;color:var(--muted);margin-bottom:4px">Mot de passe ACTUEL (requis) *</div>
+          <input id="set-current-pass" type="password" placeholder="Votre mot de passe actuel" style="width:100%;border:1.5px solid var(--pk);padding:10px 12px;font-size:13px;font-family:inherit;outline:none;box-sizing:border-box">
+        </div>
+        <div style="height:1px;background:var(--border);margin:14px 0"></div>
+        <div style="margin-bottom:12px">
+          <div style="font-size:9px;letter-spacing:1px;color:var(--muted);margin-bottom:4px">Nouveau Email</div>
+          <input id="set-email" type="email" value="${OWNER.email}" style="width:100%;border:1px solid var(--border);padding:10px 12px;font-size:13px;font-family:inherit;outline:none;box-sizing:border-box">
+        </div>
+        <div style="margin-bottom:12px">
+          <div style="font-size:9px;letter-spacing:1px;color:var(--muted);margin-bottom:4px">Nouveau Mot de passe <span style="color:var(--muted);font-size:9px">(laisser vide = garder l'actuel)</span></div>
+          <input id="set-pass" type="password" placeholder="Nouveau mot de passe" style="width:100%;border:1px solid var(--border);padding:10px 12px;font-size:13px;font-family:inherit;outline:none;box-sizing:border-box">
+        </div>
+        <div style="margin-bottom:16px">
+          <div style="font-size:9px;letter-spacing:1px;color:var(--muted);margin-bottom:4px">Confirmer Nouveau Mot de passe</div>
+          <input id="set-pass2" type="password" placeholder="Confirmer nouveau mot de passe" style="width:100%;border:1px solid var(--border);padding:10px 12px;font-size:13px;font-family:inherit;outline:none;box-sizing:border-box">
+        </div>
+        <button onclick="saveAdminSettings()" style="background:linear-gradient(135deg,var(--pk),var(--bl));color:#fff;border:none;padding:11px 28px;font-size:9px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;font-family:'Montserrat',sans-serif">Sauvegarder les modifications</button>
+        <span id="set-msg" style="font-size:11px;margin-left:12px"></span>
+      </div>
+      <div style="background:#fff;border:1px solid var(--border);padding:24px">
+        <div style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--pk);margin-bottom:18px;border-bottom:2px solid var(--border);padding-bottom:8px">📱 Infos du magasin</div>
+        <div style="margin-bottom:12px">
+          <div style="font-size:9px;letter-spacing:1px;color:var(--muted);margin-bottom:4px">Nom du magasin</div>
+          <input id="set-store-name" value="ILA Collection" style="width:100%;border:1px solid var(--border);padding:10px 12px;font-size:13px;font-family:inherit;outline:none;box-sizing:border-box">
+        </div>
+        <div style="margin-bottom:12px">
+          <div style="font-size:9px;letter-spacing:1px;color:var(--muted);margin-bottom:4px">Téléphone WhatsApp</div>
+          <input id="set-phone" value="0784811215" style="width:100%;border:1px solid var(--border);padding:10px 12px;font-size:13px;font-family:inherit;outline:none;box-sizing:border-box">
+        </div>
+        <button onclick="saveStoreSettings()" style="background:linear-gradient(135deg,var(--pk),var(--bl));color:#fff;border:none;padding:11px 28px;font-size:9px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;font-family:'Montserrat',sans-serif">Sauvegarder</button>
+        <span id="set-store-msg" style="font-size:11px;margin-left:12px"></span>
+      </div>
+    </div>`;
+  } else if(sec==='products'){
+    c.innerHTML=`<div class="admin-h">👗 Produits (${PRODUCTS.length})</div>
+    <div style="background:#fff;border:1px solid var(--border);padding:20px;margin-bottom:22px;max-width:680px">
+      <div style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--pk);margin-bottom:16px;border-bottom:2px solid var(--border);padding-bottom:8px">➕ Ajouter un Nouveau Produit</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+        <div><div style="font-size:9px;letter-spacing:1px;color:var(--muted);margin-bottom:4px">Nom du produit *</div><input id="np-name" style="width:100%;border:1px solid var(--border);padding:9px 11px;font-size:12px;font-family:inherit;outline:none" placeholder="ex: Abaya Rose Poudré"></div>
+        <div><div style="font-size:9px;letter-spacing:1px;color:var(--muted);margin-bottom:4px">Prix (DA) *</div><input id="np-price" type="number" style="width:100%;border:1px solid var(--border);padding:9px 11px;font-size:12px;font-family:inherit;outline:none" placeholder="ex: 4500"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+        <div><div style="font-size:9px;letter-spacing:1px;color:var(--muted);margin-bottom:4px">Catégorie</div>
+        <select id="np-cat" style="width:100%;border:1px solid var(--border);padding:9px 11px;font-size:12px;font-family:inherit;outline:none;background:#fff">
+          <option value="Women">Women</option><option value="Footwear">Footwear</option>
+        </select></div>
+        <div><div style="font-size:9px;letter-spacing:1px;color:var(--muted);margin-bottom:4px">Badge</div>
+        <select id="np-badge" style="width:100%;border:1px solid var(--border);padding:9px 11px;font-size:12px;font-family:inherit;outline:none;background:#fff">
+          <option value="">Aucun</option><option value="New">New</option><option value="Sale">Sale</option><option value="Promotion">Promotion</option>
+        </select></div>
+      </div>
+      <div style="margin-bottom:10px">
+        <div style="font-size:9px;letter-spacing:1px;color:var(--muted);margin-bottom:6px">Tailles disponibles *</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px" id="np-sizes-btns">
+          <span class="sz-opt selected" onclick="toggleSize(this,'XS')" style="padding:5px 12px;border:1px solid var(--pk);background:var(--pk);color:#fff;font-size:10px;cursor:pointer;letter-spacing:1px">XS</span>
+          <span class="sz-opt" onclick="toggleSize(this,'S')" style="padding:5px 12px;border:1px solid var(--border);font-size:10px;cursor:pointer;letter-spacing:1px">S</span>
+          <span class="sz-opt" onclick="toggleSize(this,'M')" style="padding:5px 12px;border:1px solid var(--border);font-size:10px;cursor:pointer;letter-spacing:1px">M</span>
+          <span class="sz-opt" onclick="toggleSize(this,'L')" style="padding:5px 12px;border:1px solid var(--border);font-size:10px;cursor:pointer;letter-spacing:1px">L</span>
+          <span class="sz-opt" onclick="toggleSize(this,'XL')" style="padding:5px 12px;border:1px solid var(--border);font-size:10px;cursor:pointer;letter-spacing:1px">XL</span>
+          <span class="sz-opt" onclick="toggleSize(this,'XXL')" style="padding:5px 12px;border:1px solid var(--border);font-size:10px;cursor:pointer;letter-spacing:1px">XXL</span>
+          <span class="sz-opt" onclick="toggleSize(this,'36')" style="padding:5px 12px;border:1px solid var(--border);font-size:10px;cursor:pointer;letter-spacing:1px">36</span>
+          <span class="sz-opt" onclick="toggleSize(this,'37')" style="padding:5px 12px;border:1px solid var(--border);font-size:10px;cursor:pointer;letter-spacing:1px">37</span>
+          <span class="sz-opt" onclick="toggleSize(this,'38')" style="padding:5px 12px;border:1px solid var(--border);font-size:10px;cursor:pointer;letter-spacing:1px">38</span>
+          <span class="sz-opt" onclick="toggleSize(this,'39')" style="padding:5px 12px;border:1px solid var(--border);font-size:10px;cursor:pointer;letter-spacing:1px">39</span>
+          <span class="sz-opt" onclick="toggleSize(this,'40')" style="padding:5px 12px;border:1px solid var(--border);font-size:10px;cursor:pointer;letter-spacing:1px">40</span>
+          <span class="sz-opt" onclick="toggleSize(this,'41')" style="padding:5px 12px;border:1px solid var(--border);font-size:10px;cursor:pointer;letter-spacing:1px">41</span>
+        </div>
+        <input id="np-sizes-custom" style="width:100%;border:1px solid var(--border);padding:7px 11px;font-size:11px;font-family:inherit;outline:none" placeholder="أو أضف تايل مخصص: ex 42,43,...">
+      </div>
+      <div style="margin-bottom:10px">
+        <div style="font-size:9px;letter-spacing:1px;color:var(--muted);margin-bottom:6px">Couleurs disponibles</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px" id="np-colors-circles">
+          <span class="cl-opt" onclick="toggleColor(this,'Blanc','#ffffff')" title="Blanc" style="width:26px;height:26px;border-radius:50%;background:#ffffff;border:2px solid #ccc;cursor:pointer;display:inline-block"></span>
+          <span class="cl-opt" onclick="toggleColor(this,'Noir','#000000')" title="Noir" style="width:26px;height:26px;border-radius:50%;background:#000000;border:2px solid #ccc;cursor:pointer;display:inline-block"></span>
+          <span class="cl-opt" onclick="toggleColor(this,'Beige','#f5e6c8')" title="Beige" style="width:26px;height:26px;border-radius:50%;background:#f5e6c8;border:2px solid #ccc;cursor:pointer;display:inline-block"></span>
+          <span class="cl-opt" onclick="toggleColor(this,'Rose','#f4a0b5')" title="Rose" style="width:26px;height:26px;border-radius:50%;background:#f4a0b5;border:2px solid #ccc;cursor:pointer;display:inline-block"></span>
+          <span class="cl-opt" onclick="toggleColor(this,'Rouge','#e53935')" title="Rouge" style="width:26px;height:26px;border-radius:50%;background:#e53935;border:2px solid #ccc;cursor:pointer;display:inline-block"></span>
+          <span class="cl-opt" onclick="toggleColor(this,'Bleu','#1565c0')" title="Bleu" style="width:26px;height:26px;border-radius:50%;background:#1565c0;border:2px solid #ccc;cursor:pointer;display:inline-block"></span>
+          <span class="cl-opt" onclick="toggleColor(this,'Bleu Ciel','#87ceeb')" title="Bleu Ciel" style="width:26px;height:26px;border-radius:50%;background:#87ceeb;border:2px solid #ccc;cursor:pointer;display:inline-block"></span>
+          <span class="cl-opt" onclick="toggleColor(this,'Vert','#2e7d32')" title="Vert" style="width:26px;height:26px;border-radius:50%;background:#2e7d32;border:2px solid #ccc;cursor:pointer;display:inline-block"></span>
+          <span class="cl-opt" onclick="toggleColor(this,'Jaune','#fdd835')" title="Jaune" style="width:26px;height:26px;border-radius:50%;background:#fdd835;border:2px solid #ccc;cursor:pointer;display:inline-block"></span>
+          <span class="cl-opt" onclick="toggleColor(this,'Caramel','#c68642')" title="Caramel" style="width:26px;height:26px;border-radius:50%;background:#c68642;border:2px solid #ccc;cursor:pointer;display:inline-block"></span>
+          <span class="cl-opt" onclick="toggleColor(this,'Gris','#9e9e9e')" title="Gris" style="width:26px;height:26px;border-radius:50%;background:#9e9e9e;border:2px solid #ccc;cursor:pointer;display:inline-block"></span>
+          <span class="cl-opt" onclick="toggleColor(this,'Bordeaux','#7b1fa2')" title="Bordeaux" style="width:26px;height:26px;border-radius:50%;background:#880e4f;border:2px solid #ccc;cursor:pointer;display:inline-block"></span>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <input type="color" id="np-color-custom-picker" value="#d4549a" style="width:30px;height:30px;border:none;cursor:pointer;padding:0;border-radius:50%">
+          <input id="np-color-custom-name" style="flex:1;min-width:120px;border:1px solid var(--border);padding:7px 11px;font-size:11px;font-family:inherit;outline:none" placeholder="Nom de la couleur (ex: Lavande)">
+          <button onclick="addCustomColor()" style="background:var(--pk);color:#fff;border:none;padding:7px 14px;font-size:10px;cursor:pointer;letter-spacing:1px">+ Ajouter</button>
+        </div>
+        <div style="margin-top:6px">
+          <div style="font-size:9px;letter-spacing:1px;color:var(--muted);margin-bottom:4px">Photo pour cette couleur (optionnel — sinon la photo principale est utilisée)</div>
+          <input type="file" id="np-color-img-file" accept="image/*" style="font-size:11px">
+        </div>
+        <div id="np-selected-colors" style="margin-top:8px;font-size:10px;color:var(--muted)">Aucune couleur sélectionnée</div>
+      </div>
+      <div style="margin-bottom:10px"><div style="font-size:9px;letter-spacing:1px;color:var(--muted);margin-bottom:4px">Description</div><textarea id="np-desc" rows="2" style="width:100%;border:1px solid var(--border);padding:9px 11px;font-size:12px;font-family:inherit;outline:none;resize:vertical" placeholder="Description du produit..."></textarea></div>
+      <div style="margin-bottom:14px">
+        <div style="font-size:9px;letter-spacing:1px;color:var(--muted);margin-bottom:4px">Photo principale du produit *</div>
+        <input type="file" id="np-img-file" accept="image/*" onchange="previewNewProduct()" style="font-size:11px">
+        <div id="np-img-preview" style="margin-top:8px"></div>
+      </div>
+      <div style="margin-bottom:14px">
+        <div style="font-size:9px;letter-spacing:1px;color:var(--muted);margin-bottom:4px">Photos secondaires (optionnel — plusieurs photos possibles)</div>
+        <input type="file" id="np-img-extra-files" accept="image/*" multiple onchange="previewExtraImages()" style="font-size:11px">
+        <div id="np-img-extra-preview" style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"></div>
+      </div>
+      <button onclick="addNewProduct()" style="background:linear-gradient(135deg,var(--pk),var(--bl));color:#fff;border:none;padding:11px 28px;font-size:9px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;font-family:'Montserrat',sans-serif">Ajouter le Produit</button>
+      <span id="np-msg" style="font-size:11px;margin-left:12px;color:var(--green)"></span>
+    </div>
+    <div class="atbl"><table>
+      <tr><th>Photo</th><th>Nom</th><th>Cat.</th><th>Prix</th><th>Tailles</th><th>Action</th></tr>
+      ${PRODUCTS.map(p=>`<tr>
+        <td><img src="${p.img}" style="width:48px;height:58px;object-fit:cover;background:var(--sand)"></td>
+        <td><strong>${p.name}</strong>${p.badge?` <span class="tag t-pend">${p.badge}</span>`:''}</td>
+        <td>${p.cat}</td>
+        <td style="color:var(--pk);font-weight:600">${p.price.toLocaleString()} DA</td>
+        <td style="font-size:10px">${p.sizes.join(', ')}</td>
+        <td><button class="act-btn" onclick="openEditProduct(${p.id})" title="Modifier / Ajouter des photos">✏️</button> <button class="act-btn del" onclick="deleteProduct(${p.id})" title="Supprimer">✕</button></td>
+      </tr>`).join('')}
+    </table></div>`;
+  } else if(sec==='edit-product'){
+    const p=PRODUCTS.find(x=>x.id===_editingProductId);
+    if(!p){c.innerHTML='<div class="admin-h">Produit introuvable</div><button class="act-btn" onclick="renderAdmin(\'products\')">← Retour</button>';return;}
+    c.innerHTML=`<div class="admin-h">✏️ Modifier: ${p.name}</div>
+    <div style="background:#fff;border:1px solid var(--border);padding:20px;margin-bottom:22px;max-width:680px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+        <div><div style="font-size:9px;letter-spacing:1px;color:var(--muted);margin-bottom:4px">Nom du produit</div><input id="ep-name" value="${p.name.replace(/"/g,'&quot;')}" style="width:100%;border:1px solid var(--border);padding:9px 11px;font-size:12px;font-family:inherit;outline:none"></div>
+        <div><div style="font-size:9px;letter-spacing:1px;color:var(--muted);margin-bottom:4px">Prix (DA)</div><input id="ep-price" type="number" value="${p.price}" style="width:100%;border:1px solid var(--border);padding:9px 11px;font-size:12px;font-family:inherit;outline:none"></div>
+      </div>
+      <div style="margin-bottom:16px">
+        <div style="font-size:9px;letter-spacing:1px;color:var(--muted);margin-bottom:6px">Photo principale</div>
+        <div id="ep-main-preview" style="margin-bottom:8px">${_editImgData?`<img src="${_editImgData}" style="width:70px;height:84px;object-fit:cover;border:1px solid var(--border)">`:''}</div>
+        <input type="file" id="ep-main-file" accept="image/*" onchange="previewEditMainImage()" style="font-size:11px">
+      </div>
+      <div style="margin-bottom:16px">
+        <div style="font-size:9px;letter-spacing:1px;color:var(--muted);margin-bottom:6px">Photos supplémentaires (galerie du produit — plusieurs angles/détails)</div>
+        <div id="ep-extra-preview" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">${renderEditExtraThumbs()}</div>
+        <input type="file" id="ep-extra-file" accept="image/*" multiple onchange="previewEditExtraImages()" style="font-size:11px">
+      </div>
+      <div style="margin-bottom:16px;background:var(--cream);border:1px solid var(--cream-border);padding:14px">
+        <div style="font-size:9px;letter-spacing:1px;color:var(--muted);margin-bottom:8px">Couleurs — ajoutez une photo pour chaque couleur pour que les clientes voient le produit dans cette couleur</div>
+        <div id="ep-colors-list">${renderEditColorsList()}</div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px;border-top:1px solid var(--cream-border);padding-top:10px">
+          <input type="color" id="ep-color-picker" value="#d4549a" style="width:30px;height:30px;border:none;cursor:pointer;padding:0;border-radius:50%">
+          <input id="ep-color-name" style="flex:1;min-width:120px;border:1px solid var(--border);padding:7px 11px;font-size:11px;font-family:inherit;outline:none" placeholder="Nom de la nouvelle couleur">
+          <button onclick="addEditColor()" style="background:var(--olive-dark);color:#fff;border:none;padding:7px 14px;font-size:10px;cursor:pointer;letter-spacing:1px">+ Ajouter couleur</button>
+        </div>
+        <div style="border-top:1px solid var(--cream-border);margin-top:12px;padding-top:12px">
+          <div style="font-size:9px;letter-spacing:1px;color:var(--muted);margin-bottom:6px">🪄 Ou générer une photo automatiquement (recolore uniquement le vêtement, expérimental — pas 100% parfait)</div>
+          <button type="button" onclick="openAutoRecolorTool()" style="background:none;border:1px solid var(--olive);color:var(--olive-dark);padding:7px 14px;font-size:10px;cursor:pointer;letter-spacing:1px">🪄 Ouvrir l'outil de recoloriage</button>
+          <div id="ep-recolor-tool" style="display:none;margin-top:12px"></div>
+        </div>
+      </div>
+      <button onclick="saveEditedProduct()" style="background:linear-gradient(135deg,var(--mauve),var(--navy));color:#fff;border:none;padding:11px 28px;font-size:9px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;font-family:'Montserrat',sans-serif">💾 Enregistrer les modifications</button>
+      <button onclick="renderAdmin('products')" style="background:none;border:1px solid var(--border);padding:11px 20px;font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Montserrat',sans-serif;margin-left:8px">Annuler</button>
+      <span id="ep-msg" style="font-size:11px;margin-left:12px;color:var(--green)"></span>
+    </div>`;
+  } else if(sec==='delivery'){
+    const rows=Object.entries(WILAYA_DELIVERY).map(([w,p])=>`
+      <tr>
+        <td><strong>${w}</strong></td>
+        <td><input type="number" id="dp-home-${w.replace(/[^a-z0-9]/gi,'_')}" value="${p.home}" style="width:90px;border:1px solid var(--border);padding:5px 8px;font-family:inherit;font-size:12px;outline:none"></td>
+        <td><input type="number" id="dp-desk-${w.replace(/[^a-z0-9]/gi,'_')}" value="${p.desk}" style="width:90px;border:1px solid var(--border);padding:5px 8px;font-family:inherit;font-size:12px;outline:none"></td>
+        <td><button class="act-btn" onclick="saveSingleDeliveryPrice('${w}')">💾 Sauver</button></td>
+      </tr>`).join('');
+    c.innerHTML=`<div class="admin-h">🚚 Tarifs de Livraison par Wilaya</div>
+    <div style="background:#fff8f0;border:1px solid #f5c07a;padding:12px 16px;margin-bottom:18px;font-size:11px;color:#a0622a">
+      ✏️ Modifiez les prix et cliquez <strong>💾 Sauver</strong> pour chaque ligne ou <strong>Sauvegarder Tous</strong> en une fois.
+    </div>
+    <div style="margin-bottom:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <button class="act-btn" onclick="saveAllDeliveryPrices()" style="background:linear-gradient(135deg,var(--pk),var(--bl));color:#fff;border:none;padding:8px 18px">💾 Sauvegarder Tous les Prix</button>
+      <span id="delivery-save-msg" style="font-size:11px;color:var(--green)"></span>
+    </div>
+    <div class="atbl" style="overflow-x:auto"><table style="min-width:400px">
+      <tr><th>Wilaya</th><th>🏠 Domicile (DA)</th><th>🏢 Stop Desk (DA)</th><th>Action</th></tr>
+      ${rows}
+    </table></div>`;
+  } else if(sec==='settings'){
+    c.innerHTML=`<div class="admin-h">⚙️ Paramètres</div>
+    <div style="background:#fff;border:1px solid var(--border);padding:24px;max-width:500px">
+      <div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:16px">Informations du Compte</div>
+      <div style="font-size:12px;line-height:2.2">
+        <div>👤 Nom: <strong>Islam Moula</strong></div>
+        <div>📧 Email: <strong>${OWNER.email}</strong></div>
+        <div>📞 Contact: <strong>0784811215</strong></div>
+        <div>📍 Adresse: <strong>Bordj Bou Arreridj, Algérie</strong></div>
+        <div>🏪 Page Instagram: <strong>@ila_.collection</strong></div>
+      </div>
+      <div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin:20px 0 12px">EmailJS</div>
+      <div style="font-size:11px;line-height:2;background:var(--sand);padding:12px;border-left:3px solid var(--pk)">
+        Service ID: <strong>service_ml71p4h</strong><br>
+        Template ID: <strong>template_80uzu07</strong><br>
+        Public Key: <strong style="color:var(--red)">À configurer</strong>
+      </div>
+    </div>`;
+  }
+}
+function filterOrders(status){
+  const list=status==='all'?ORDERS_DB:ORDERS_DB.filter(o=>o.status===status);
+  const wrap=document.getElementById('orders-table-wrap');if(!wrap)return;
+  wrap.innerHTML=`<div class="atbl"><table>
+    <tr><th>Réf</th><th>Client</th><th>Produits</th><th>Wilaya</th><th>Livraison</th><th>Total</th><th>Statut</th><th>Actions</th></tr>
+    ${list.map(o=>`<tr>
+      <td><strong style="color:var(--pk)">${o.ref}</strong><br><span style="font-size:10px;color:var(--muted)">${o.date}</span></td>
+      <td><strong>${o.name}</strong><br><span style="font-size:10px">${o.phone}</span><br><span style="font-size:10px;color:var(--muted)">${o.email||''}</span></td>
+      <td style="font-size:10px;max-width:180px">
+        ${(o.orderItems&&o.orderItems.length?o.orderItems:[]).map(item=>`<div style="display:flex;align-items:center;gap:6px;margin-bottom:5px"><img src="${item.productImage||''}" style="width:36px;height:44px;object-fit:cover;background:var(--sand);flex-shrink:0;border:1px solid var(--border)" onerror="this.style.display='none'"><div><div style="font-weight:500">${item.productName}</div><div style="color:var(--muted)">${item.selectedSize?'T:'+item.selectedSize:''} x${item.quantity}</div></div></div>`).join('')}
+        ${!o.orderItems||!o.orderItems.length?`<span>${o.products||''}</span>`:''}
+      </td>
+      <td>${o.wilaya}<br><span style="font-size:10px;color:var(--muted)">${o.commune||''}</span></td>
+      <td style="font-size:10px">${o.delivery==='home'?'🏠 Domicile':'🏢 Stop Desk'}<br><span style="color:var(--pk);font-weight:600">${o.deliveryPrice?o.deliveryPrice.toLocaleString()+' DA':''}</span></td>
+      <td style="color:var(--pk);font-weight:600">${o.total.toLocaleString()} DA</td>
+      <td><span class="tag ${o.status==='Pending'?'t-pend':o.status==='Confirmed'?'t-conf':'t-delv'}">${o.status}</span></td>
+      <td>
+        <button class="act-btn" onclick="updateStatus('${o.ref}','Confirmed')" title="Confirmer">✓</button>
+        <button class="act-btn" onclick="updateStatus('${o.ref}','Delivered')" title="Livré">🚚</button>
+        <button class="act-btn del" onclick="deleteOrder('${o.ref}')" title="Supprimer">✕</button>
+      </td>
+    </tr>`).join('')}
+  </table></div>`;
+}
+function saveSingleDeliveryPrice(wilaya){
+  const key=wilaya.replace(/[^a-z0-9]/gi,'_');
+  const homeInput=document.getElementById('dp-home-'+key);
+  const deskInput=document.getElementById('dp-desk-'+key);
+  if(!homeInput||!deskInput)return;
+  WILAYA_DELIVERY[wilaya]={home:parseInt(homeInput.value)||0,desk:parseInt(deskInput.value)||0};
+  const msg=document.getElementById('delivery-save-msg');
+  if(msg){msg.textContent='✓ '+wilaya+' mis à jour!';setTimeout(()=>{if(msg)msg.textContent='';},2500);}
+}
+function saveAllDeliveryPrices(){
+  Object.keys(WILAYA_DELIVERY).forEach(w=>{
+    const key=w.replace(/[^a-z0-9]/gi,'_');
+    const h=document.getElementById('dp-home-'+key);
+    const d=document.getElementById('dp-desk-'+key);
+    if(h&&d){WILAYA_DELIVERY[w]={home:parseInt(h.value)||0,desk:parseInt(d.value)||0};}
+  });
+  const msg=document.getElementById('delivery-save-msg');
+  if(msg){msg.textContent='✓ Tous les tarifs sauvegardés!';setTimeout(()=>{if(msg)msg.textContent='';},3000);}
+}
+function updateStatus(ref,status){
+  // [FIX] Find the order to get its Firestore _fbId
+  const o = ORDERS_DB.find(x=>x.ref===ref);
+  if(!o){ console.warn('Order not found:', ref); return; }
+  console.log('📝 [Real-Time] updateStatus called:', ref, '→', status);
+  if(window.fbReady && window.fbUpdateOrderStatus && o._fbId){
+    // Update in Firestore — onSnapshot will fire on ALL devices and re-render
+    window.fbUpdateOrderStatus(o._fbId, status);
+    console.log('✅ [Real-Time] Order status sent to Firestore — all devices will sync automatically');
+  } else {
+    // Fallback: update locally only
+    console.warn('⚠️ Firebase not ready or no _fbId — updating locally only');
+    o.status = status;
+    renderAdmin('orders');
+    adminNav('orders', document.querySelectorAll('.admin-nav-item')[1]);
+  }
+}
+function deleteOrder(ref){
+  if(!confirm('Supprimer la commande '+ref+' ?'))return;
+  const o = ORDERS_DB.find(x=>x.ref===ref);
+  if(!o){ console.warn('Order not found:', ref); return; }
+  console.log('🗑️ [Real-Time] deleteOrder called for ref:', ref);
+  if(window.fbReady && window.fbDeleteOrder && o._fbId){
+    // Delete from Firestore — onSnapshot fires on ALL devices automatically
+    window.fbDeleteOrder(o._fbId);
+    console.log('✅ [Real-Time] Order delete sent to Firestore — all devices will sync');
+  } else {
+    // Fallback: delete locally only
+    console.warn('⚠️ Firebase not ready or no _fbId — deleting locally only');
+    ORDERS_DB = ORDERS_DB.filter(o=>o.ref!==ref);
+    renderAdmin('orders');
+    adminNav('orders', document.querySelectorAll('.admin-nav-item')[1]);
+  }
+}
+
+// ═══════════════════════════════════
+// DRAWERS & MODALS
+// ═══════════════════════════════════
+function closeAllDrawers(){
+  ['cart-drawer','wish-drawer'].forEach(id=>document.getElementById(id).classList.remove('open'));
+  document.getElementById('drawer-backdrop').style.display='none';
+}
+
+// ═══════════════════════════════════
+// INFO MODALS (footer)
+// ═══════════════════════════════════
+function showInfoModal(type){
+  const info={
+    delivery:{title:'Informations Livraison',body:'Nous livrons dans les <strong>58 wilayas d\'Algérie</strong>.<br><br>🏠 <strong>Domicile:</strong> 400 DA — 2 à 5 jours ouvrables<br>🏢 <strong>Bureau:</strong> 250 DA — 1 à 3 jours ouvrables<br><br>📞 Confirmation par téléphone sous 24h.'},
+    returns:{title:'Politique de Retour',body:'Retours acceptés dans les <strong>7 jours</strong> après livraison.<br><br>Articles non portés et dans leur emballage d\'origine.<br>Contactez-nous via WhatsApp pour initier un retour.<br><br>📞 0784811215'},
+    payment:{title:'Méthode de Paiement',body:'ILA Collection accepte uniquement le paiement <strong>à la livraison</strong>.<br><br>💵 Vous payez le montant total en espèces au livreur lors de la réception de votre commande.<br><br>Simple, sécurisé, sans avance.'}
+  };
+  const d=info[type];if(!d)return;
+  let m=document.getElementById('info-modal');
+  if(!m){
+    m=document.createElement('div');m.id='info-modal';
+    m.style.cssText='display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:800;align-items:center;justify-content:center;padding:20px';
+    m.innerHTML=`<div style="background:#fff;max-width:440px;width:100%;padding:32px;position:relative;border-top:4px solid var(--pk)">
+      <button onclick="document.getElementById('info-modal').style.display='none'" style="position:absolute;top:14px;right:14px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--pk)">×</button>
+      <div id="info-modal-title" style="font-family:'Cormorant Garamond',serif;font-size:22px;margin-bottom:14px;color:var(--pk)"></div>
+      <div id="info-modal-body" style="font-size:12px;line-height:2;color:var(--muted)"></div>
+    </div>`;
+    document.body.appendChild(m);
+  }
+  document.getElementById('info-modal-title').textContent=d.title;
+  document.getElementById('info-modal-body').innerHTML=d.body;
+  m.style.display='flex';
+}
+
+// ═══════════════════════════════════
+// INIT
+// ═══════════════════════════════════
+// ═══════════════════════════════════
+// SIZE + COLOR SELECTORS
+// ═══════════════════════════════════
+let _selectedColors = [];
+
+function toggleSize(el, size){
+  el.classList.toggle('selected');
+  if(el.classList.contains('selected')){
+    el.style.background='var(--pk)';
+    el.style.color='#fff';
+    el.style.borderColor='var(--pk)';
+  } else {
+    el.style.background='';
+    el.style.color='';
+    el.style.borderColor='var(--border)';
+  }
+}
+
+function toggleColor(el, name, hex){
+  const already = _selectedColors.findIndex(x=>x.name===name);
+  if(already>=0){
+    _selectedColors.splice(already,1);
+    el.style.outline='none';
+    el.style.transform='scale(1)';
+  } else {
+    _selectedColors.push({name,hex});
+    el.style.outline='3px solid var(--pk)';
+    el.style.outlineOffset='2px';
+    el.style.transform='scale(1.15)';
+  }
+  updateColorDisplay();
+}
+
+async function addCustomColor(){
+  const hex = document.getElementById('np-color-custom-picker').value;
+  const name = document.getElementById('np-color-custom-name').value.trim()||'Couleur '+(_selectedColors.length+1);
+  if(_selectedColors.find(x=>x.hex===hex))return;
+  const imgFileInput = document.getElementById('np-color-img-file');
+  const file = imgFileInput&&imgFileInput.files&&imgFileInput.files[0];
+  const commit = (imgData)=>{
+    _selectedColors.push({name,hex,img:imgData||''});
+    // Add circle in UI
+    const div = document.getElementById('np-colors-circles');
+    const sp = document.createElement('span');
+    sp.className='cl-opt';
+    sp.title=name;
+    sp.style.cssText='width:26px;height:26px;border-radius:50%;background:'+hex+';border:3px solid var(--pk);cursor:pointer;display:inline-block;outline:3px solid var(--pk);outline-offset:2px;transform:scale(1.15)';
+    div.appendChild(sp);
+    updateColorDisplay();
+    document.getElementById('np-color-custom-name').value='';
+    if(imgFileInput)imgFileInput.value='';
+  };
+  if(file){
+    try{
+      const dataUrl = await compressImageFile(file, 500, 0.6);
+      commit(dataUrl);
+    }catch(err){
+      console.error('❌ compression photo couleur error:', err);
+      alert('⚠️ Cette photo de couleur n\'a pas pu être traitée. La couleur sera ajoutée sans photo.');
+      commit('');
+    }
+  } else {
+    commit('');
+  }
+}
+
+function updateColorDisplay(){
+  const el = document.getElementById('np-selected-colors');
+  if(!el) return;
+  if(_selectedColors.length===0){
+    el.textContent='Aucune couleur sélectionnée';
+  } else {
+    el.innerHTML = _selectedColors.map(x=>`<span style="display:inline-flex;align-items:center;gap:4px;margin-right:8px"><span style="width:12px;height:12px;border-radius:50%;background:${x.hex};display:inline-block;border:1px solid #ccc"></span>${x.name}${x.img?' 📷':''}</span>`).join('');
+  }
+}
+
+function getSelectedSizes(){
+  const btns = document.querySelectorAll('#np-sizes-btns .sz-opt.selected');
+  const fromBtns = Array.from(btns).map(b=>b.textContent.trim());
+  const custom = (document.getElementById('np-sizes-custom')||{}).value||'';
+  const fromCustom = custom.split(',').map(s=>s.trim()).filter(Boolean);
+  return [...new Set([...fromBtns,...fromCustom])];
+}
+
+// ═══════════════════════════════════
+// ADMIN SETTINGS
+// ═══════════════════════════════════
+function saveAdminSettings(){
+  const currentPass = (document.getElementById('set-current-pass')||{}).value;
+  const email = (document.getElementById('set-email')||{}).value.trim();
+  const pass = (document.getElementById('set-pass')||{}).value;
+  const pass2 = (document.getElementById('set-pass2')||{}).value;
+  const msg = document.getElementById('set-msg');
+  // Verify current password first
+  if(!currentPass){
+    msg.style.color='var(--red)';
+    msg.textContent='⚠️ Entrez votre mot de passe actuel pour confirmer.';
+    document.getElementById('set-current-pass').focus();
+    return;
+  }
+  if(currentPass !== OWNER.password){
+    msg.style.color='var(--red)';
+    msg.textContent='❌ Mot de passe actuel incorrect.';
+    document.getElementById('set-current-pass').value='';
+    document.getElementById('set-current-pass').focus();
+    return;
+  }
+  if(!email){msg.style.color='var(--red)';msg.textContent='Email requis.';return;}
+  if(pass && pass.length < 6){msg.style.color='var(--red)';msg.textContent='Nouveau mot de passe trop court (min 6 caractères).';return;}
+  if(pass && pass!==pass2){msg.style.color='var(--red)';msg.textContent='Les nouveaux mots de passe ne correspondent pas.';return;}
+  // All good — apply changes
+  OWNER.email = email;
+  if(pass) OWNER.password = pass;
+  // ✅ FIX: Never save password to localStorage — Firestore only
+  try{localStorage.setItem('ila_admin_email',email);}catch(e){}
+  // Save to Firebase — syncs ALL devices
+  if(window.fbReady && window.fbSaveSettings){
+    const toSave = {adminEmail: email};
+    if(pass) toSave.adminPass = pass;
+    window.fbSaveSettings(toSave);
+  }
+  // Clear fields
+  document.getElementById('set-current-pass').value='';
+  document.getElementById('set-pass').value='';
+  document.getElementById('set-pass2').value='';
+  msg.style.color='var(--green)';
+  msg.textContent='✓ Sauvegardé sur tous les appareils!';
+  // Show Firebase status
+  if(window.fbReady && window.fbSaveSettings){
+    const toSave = {adminEmail: email};
+    if(pass) toSave.adminPass = pass;
+    window.fbSaveSettings(toSave).then(ok=>{
+      if(ok){ msg.textContent='✓ Synchronisé Firebase ✅ — tous appareils mis à jour!'; }
+      else { msg.style.color='orange'; msg.textContent='⚠️ Sauvé localement seulement — Firebase error'; }
+    });
+  } else {
+    msg.style.color='orange';
+    msg.textContent='⚠️ Firebase non connecté — sauvé localement seulement';
+  }
+  setTimeout(()=>{if(msg)msg.textContent='';},4000);
+}
+
+function saveStoreSettings(){
+  const phone = (document.getElementById('set-phone')||{}).value.trim();
+  const msg = document.getElementById('set-store-msg');
+  if(!phone){msg.style.color='var(--red)';msg.textContent='Numéro requis.';return;}
+  // Update global variable
+  STORE_PHONE = phone;
+  STORE_PHONE_CLEAN = phone.replace(/[^0-9]/g,'');
+  // Update WhatsApp buttons
+  document.querySelectorAll('.wa-fab, #wa-fab-link').forEach(wa=>{
+    wa.href='https://wa.me/213'+STORE_PHONE_CLEAN.slice(1);
+  });
+  // Update ALL phone displays on page
+  document.querySelectorAll('#footer-phone-display, .store-phone-display').forEach(el=>{
+    el.textContent = phone;
+  });
+  // Save to localStorage permanently
+  try{localStorage.setItem('ila_store_phone', phone);}catch(e){}
+  // Save to Firebase — syncs ALL devices
+  if(window.fbReady && window.fbSaveSettings){
+    window.fbSaveSettings({storePhone: phone});
+  }
+  msg.style.color='var(--green)';
+  msg.textContent='✓ Numéro mis à jour partout!';
+  setTimeout(()=>{if(msg)msg.textContent='';},3000);
+}
+
+// ✅ FIX: Only load phone from localStorage. Never override OWNER credentials from localStorage
+// (Security: credentials should come from Firestore/hardcode only)
+(function loadSavedSettings(){
+  try{
+    const phone=localStorage.getItem('ila_store_phone');
+    if(phone){
+      window._STORE_PHONE=phone;
+      document.addEventListener('DOMContentLoaded',function(){
+        STORE_PHONE=phone;
+        STORE_PHONE_CLEAN=phone.replace(/[^0-9]/g,'');
+        document.querySelectorAll('#footer-phone-display,.store-phone-display').forEach(el=>{el.textContent=phone;});
+        document.querySelectorAll('.wa-fab,#wa-fab-link').forEach(wa=>{wa.href='https://wa.me/213'+STORE_PHONE_CLEAN.slice(1);});
+        const sp=document.getElementById('set-phone');
+        if(sp) sp.value=phone;
+      });
+    }
+  }catch(e){}
+})();
+
+// ═══════════════════════════════════
+// FORGOT PASSWORD — WhatsApp Recovery
+// ═══════════════════════════════════
+const ADMIN_PHONE = '0784811215'; // رقم هاتف الأدمن
+let _recoveryCode = '';
+let _codeExpiry = 0;
+
+function showForgotPanel(){
+  const fp = document.getElementById('forgot-panel');
+  if(fp){
+    fp.style.display='flex';
+    // Reset to step 1
+    document.getElementById('forgot-step1').style.display='block';
+    document.getElementById('forgot-step2').style.display='none';
+    document.getElementById('forgot-step3').style.display='none';
+    document.getElementById('forgot-phone').value='';
+    document.getElementById('forgot-err1').textContent='';
+    setTimeout(()=>document.getElementById('forgot-phone').focus(),100);
+  }
+}
+
+function closeForgotPanel(){
+  const fp = document.getElementById('forgot-panel');
+  if(fp) fp.style.display='none';
+  _recoveryCode='';
+  _codeExpiry=0;
+}
+
+function sendRecoveryCode(){
+  const emailInput = document.getElementById('forgot-phone').value.trim().toLowerCase();
+  const err = document.getElementById('forgot-err1');
+  err.textContent='';
+
+  // Verify email matches admin email
+  if(!emailInput || emailInput.toLowerCase() !== OWNER.email.toLowerCase()){
+    err.textContent='❌ Email incorrect. Entrez l\'email admin enregistré.';
+    return;
+  }
+
+  // Generate 4-digit code
+  _recoveryCode = String(Math.floor(1000 + Math.random() * 9000));
+  _codeExpiry = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+  // Show loading
+  const btn = document.querySelector('#forgot-step1 button');
+  if(btn){btn.textContent='Envoi en cours...';btn.disabled=true;}
+  err.style.color='var(--muted)';
+  err.textContent='📨 Envoi du code...';
+
+  // Send via EmailJS
+  emailjs.send('service_ml71p4h','template_80uzu07',{
+    code: _recoveryCode,
+    passcode: _recoveryCode,
+    message: 'Code de récupération ILA Admin: ' + _recoveryCode
+  },'gigJeLbvY1zStmSJb')
+  .then(()=>{
+    // Success — show step 2
+    document.getElementById('forgot-step1').style.display='none';
+    document.getElementById('forgot-step2').style.display='block';
+    document.getElementById('forgot-code-input').value='';
+    document.getElementById('forgot-err2').textContent='';
+    setTimeout(()=>document.getElementById('forgot-code-input').focus(),300);
+    if(btn){btn.textContent='Envoyer le code';btn.disabled=false;}
+  })
+  .catch((e)=>{
+    err.style.color='var(--red)';
+    const errMsg = e && e.text ? e.text : (e && e.status ? 'Status: '+e.status : JSON.stringify(e));
+    err.textContent='❌ Erreur: ' + errMsg;
+    console.error('EmailJS error full:',JSON.stringify(e));
+    _recoveryCode='';
+    if(btn){btn.textContent='Envoyer le code';btn.disabled=false;}
+  });
+}
+
+function verifyRecoveryCode(){
+  const entered = document.getElementById('forgot-code-input').value.trim();
+  const err = document.getElementById('forgot-err2');
+  err.textContent='';
+
+  if(!_recoveryCode){err.textContent='❌ Code expiré. Recommencez.';return;}
+  if(Date.now() > _codeExpiry){
+    err.textContent='⏰ Code expiré (10 min). Recommencez.';
+    _recoveryCode='';
+    document.getElementById('forgot-step2').style.display='none';
+    document.getElementById('forgot-step1').style.display='block';
+    return;
+  }
+  if(entered !== _recoveryCode){
+    err.textContent='❌ Code incorrect. Vérifiez votre WhatsApp.';
+    return;
+  }
+
+  // Code correct — show step 3
+  document.getElementById('forgot-step2').style.display='none';
+  document.getElementById('forgot-step3').style.display='block';
+  document.getElementById('forgot-newpass').value='';
+  document.getElementById('forgot-newpass2').value='';
+  document.getElementById('forgot-err3').textContent='';
+  setTimeout(()=>document.getElementById('forgot-newpass').focus(),100);
+}
+
+function setNewPassword(){
+  const pass = document.getElementById('forgot-newpass').value;
+  const pass2 = document.getElementById('forgot-newpass2').value;
+  const err = document.getElementById('forgot-err3');
+  err.textContent='';
+  if(!pass||pass.length<6){err.textContent='Minimum 6 caractères.';return;}
+  if(pass!==pass2){err.textContent='❌ Les mots de passe ne correspondent pas.';return;}
+
+  // Set new password
+  OWNER.password = pass;
+  try{localStorage.setItem('ila_admin_pass', pass);}catch(e){}
+  _recoveryCode='';
+  _codeExpiry=0;
+
+  // Close forgot panel
+  closeForgotPanel();
+
+  // Open admin login with success message
+  openAdminLogin();
+  setTimeout(()=>{
+    const err2 = document.getElementById('admin-login-err');
+    if(err2){err2.style.color='var(--green)';err2.textContent='✅ Mot de passe changé! Connectez-vous.';}
+  },200);
+}
+
+// ═══════════════════════════════════
+// HAMBURGER NAV DROPDOWN (visual-only addition)
+// ═══════════════════════════════════
+function toggleNavMenu(force){
+  const m=document.getElementById('nav-menu-list');
+  if(!m)return;
+  if(force===false){m.classList.remove('mobile-open');return;}
+  m.classList.toggle('mobile-open');
+}
+document.addEventListener('click',function(e){
+  const m=document.getElementById('nav-menu-list');
+  if(!m||!m.classList.contains('mobile-open'))return;
+  if(e.target.closest('#nav-menu-list')||e.target.closest('.nav-hamburger'))return;
+  m.classList.remove('mobile-open');
+});
+
+// ═══════════════════════════════════
+// HIDDEN ADMIN LOGIN
+// ═══════════════════════════════════
+let _logoClicks=0, _logoTimer=null;
+function handleLogoClick(){
+  _logoClicks++;
+  if(_logoTimer)clearTimeout(_logoTimer);
+  _logoTimer=setTimeout(()=>{_logoClicks=0;},3000);
+  if(_logoClicks>=5){
+    _logoClicks=0;
+    openAdminLogin();
+    return;
+  }
+  goShop();
+}
+function openAdminLogin(){
+  let ov=document.getElementById('admin-login-overlay');
+  if(!ov)return;
+  // Force display regardless of any other CSS
+  ov.removeAttribute('style');
+  ov.style.display='flex';
+  ov.style.position='fixed';
+  ov.style.inset='0';
+  ov.style.background='rgba(0,0,0,.88)';
+  ov.style.zIndex='999999';
+  ov.style.alignItems='center';
+  ov.style.justifyContent='center';
+  ov.style.flexDirection='column';
+  const em=document.getElementById('admin-login-email');
+  const pw=document.getElementById('admin-login-pass');
+  const err=document.getElementById('admin-login-err');
+  if(em){em.value='';setTimeout(()=>em.focus(),150);}
+  if(pw)pw.value='';
+  if(err)err.textContent='';
+}
+function doAdminLogin(){
+  const emailEl=document.getElementById('admin-login-email');
+  const passEl=document.getElementById('admin-login-pass');
+  const err=document.getElementById('admin-login-err');
+  if(!emailEl||!passEl||!err)return;
+  const email=emailEl.value.trim().toLowerCase();
+  const pass=passEl.value.trim();
+  err.textContent='';
+  if(!email||!pass){err.textContent='Remplissez tous les champs.';return;}
+  // ✅ FIX: Compare against HARDCODED values — never use OWNER.email/password
+  // which may be corrupted by Firebase settings
+  const ADMIN_EMAIL='dar.mod.class1@gmail.com';
+  const ADMIN_PASS='ILA_2002';
+  console.log('Login attempt:', email, '| Match email:', email===ADMIN_EMAIL, '| Match pass:', pass===ADMIN_PASS);
+  if(email===ADMIN_EMAIL && pass===ADMIN_PASS){
+    document.getElementById('admin-login-overlay').style.display='none';
+    // Also restore OWNER to correct values
+    OWNER.email=ADMIN_EMAIL;
+    OWNER.password=ADMIN_PASS;
+    // ── META PIXEL: Custom Login event ───────────────────────
+    if(window.ILAPixel) ILAPixel.trackLogin('email');
+    enterSite({...OWNER,avatar:'https://ui-avatars.com/api/?name=Islam+Moula&background=d4549a&color=fff&size=64',source:'email'});
+  } else {
+    passEl.value='';
+    err.textContent='❌ Email ou mot de passe incorrect.';
+    passEl.focus();
+  }
+}
+
+// ═══════════════════════════════════
+// PRODUCT MANAGEMENT
+// ═══════════════════════════════════
+// Firestore rejects any field/document over ~1MB. A raw phone photo read via
+// FileReader.readAsDataURL can easily be 3-8MB, so every image used on a product
+// (main photo, gallery photos, color-swatch photos) is resized + re-compressed
+// to a JPEG before it's ever turned into base64. This keeps products small enough
+// to always save successfully, no matter how many images/colors are attached.
+function compressImageFile(file, maxDim, quality){
+  maxDim = maxDim || 900;
+  quality = quality || 0.65;
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onerror = ()=>reject(reader.error);
+    reader.onload = (e)=>{
+      const img = new Image();
+      img.onerror = ()=>reject(new Error('Image invalide'));
+      img.onload = ()=>{
+        let w = img.width, h = img.height;
+        if(w > maxDim || h > maxDim){
+          if(w >= h){ h = Math.round(h * (maxDim / w)); w = maxDim; }
+          else { w = Math.round(w * (maxDim / h)); h = maxDim; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+let _newProdImgData = '';
+let _newProdExtraImages = [];
+async function previewNewProduct(){
+  const file = document.getElementById('np-img-file').files[0];
+  if(!file) return;
+  const prev = document.getElementById('np-img-preview');
+  if(prev) prev.innerHTML = '<span style="font-size:11px;color:var(--muted)">Compression en cours…</span>';
+  try{
+    _newProdImgData = await compressImageFile(file, 900, 0.65);
+    if(prev) prev.innerHTML = '<img src="'+_newProdImgData+'" style="width:80px;height:96px;object-fit:cover;border:1px solid var(--border)">';
+  }catch(err){
+    console.error('❌ compression image principale error:', err);
+    if(prev) prev.innerHTML = '';
+    alert('⚠️ Cette photo n\'a pas pu être traitée. Essayez une autre image.');
+  }
+}
+// Reads all files selected for the secondary/gallery images input, compresses each,
+// and stores their (small) data URLs.
+async function previewExtraImages(){
+  const files = Array.from(document.getElementById('np-img-extra-files').files||[]);
+  _newProdExtraImages = [];
+  const prev = document.getElementById('np-img-extra-preview');
+  if(prev) prev.innerHTML = '<span style="font-size:11px;color:var(--muted)">Compression en cours…</span>';
+  for(const file of files){
+    try{
+      const dataUrl = await compressImageFile(file, 900, 0.6);
+      _newProdExtraImages.push(dataUrl);
+    }catch(err){
+      console.error('❌ compression image galerie error:', err);
+    }
+  }
+  if(prev){
+    prev.innerHTML = '';
+    _newProdExtraImages.forEach(dataUrl=>{
+      const img = document.createElement('img');
+      img.src = dataUrl;
+      img.style.cssText = 'width:52px;height:62px;object-fit:cover;border:1px solid var(--border)';
+      prev.appendChild(img);
+    });
+  }
+}
+async function addNewProduct(){
+  const name = document.getElementById('np-name').value.trim();
+  const price = parseInt(document.getElementById('np-price').value);
+  const cat = document.getElementById('np-cat').value;
+  const badge = document.getElementById('np-badge').value;
+  const desc = document.getElementById('np-desc').value.trim();
+  const msg = document.getElementById('np-msg');
+  const sizes = getSelectedSizes();
+  const colors = _selectedColors.slice();
+  if(!name){alert('Veuillez entrer le nom du produit.');return;}
+  if(!price||price<100){alert('Veuillez entrer un prix valide.');return;}
+  if(sizes.length===0){alert('Sélectionner au moins une taille.');return;}
+  if(!_newProdImgData){alert('Veuillez choisir une photo.');return;}
+  const images = _newProdExtraImages.slice();
+  const newP = {id: nextProductId++, name, cat, price, badge, img: _newProdImgData, images, sizes, colors, desc: desc||'Produit ILA Collection.'};
+  // Safety net: Firestore rejects any document over ~1MB. Images are already
+  // compressed on selection, but check the final size before attempting to save
+  // so an admin adding many gallery/color photos gets a clear, specific warning.
+  const approxSizeBytes = new Blob([JSON.stringify(newP)]).size;
+  if(approxSizeBytes > 950000){
+    alert('⚠️ Ce produit est trop volumineux pour être enregistré (environ '+Math.round(approxSizeBytes/1024)+' Ko, la limite est ~1000 Ko).\n\nRéduisez le nombre de photos supplémentaires ou de couleurs avec photo, puis réessayez.');
+    return;
+  }
+  // [FIX] Save to Firestore ONLY — onSnapshot will add it to PRODUCTS and re-render on ALL devices
+  if(window.fbReady && window.fbSaveProduct){
+    console.log('➕ [Real-Time] Adding new product to Firestore:', name);
+    const saved = await window.fbSaveProduct(newP);
+    if(!saved){
+      // fbSaveProduct already alerted the detailed error — stop here so the admin
+      // knows the product did NOT reach Firestore (customers will not see it).
+      return;
+    }
+    console.log('✅ [Real-Time] Product saved — onSnapshot will update all devices');
+  } else {
+    // Firebase isn't connected — the product will ONLY exist in this browser tab.
+    // Customers on other devices will NOT see it until it's actually saved to Firestore.
+    alert('⚠️ Firebase n\'est pas connecté pour le moment.\n\nLe produit a été ajouté uniquement sur cet appareil et ne sera PAS visible par vos clients tant que la connexion Firebase n\'est pas rétablie.\n\nRafraîchissez la page une fois la connexion internet stable, puis réessayez d\'ajouter le produit.');
+    PRODUCTS.push(newP);
+    renderProducts(currentCat||'All');
+    renderAdmin('products');
+  }
+  _newProdImgData = '';
+  _newProdExtraImages = [];
+  _selectedColors = [];
+  const extraPrev=document.getElementById('np-img-extra-preview');if(extraPrev)extraPrev.innerHTML='';
+  const extraFileInput=document.getElementById('np-img-extra-files');if(extraFileInput)extraFileInput.value='';
+  document.querySelectorAll('.sz-opt').forEach(b=>{b.classList.remove('selected');b.style.background='';b.style.color='';b.style.borderColor='var(--border)';});
+  if(msg){msg.textContent='✓ Produit ajouté! En cours de synchronisation...';setTimeout(()=>{if(msg)msg.textContent='';},3000);}
+}
+function deleteProduct(id){
+  if(!confirm('Supprimer ce produit?'))return;
+  // [FIX] Delete from Firestore first — onSnapshot will update ALL devices automatically
+  if(window.fbReady && window.fbDeleteProduct){
+    console.log('🗑️ [Real-Time] deleteProduct called for id:', id);
+    window.fbDeleteProduct(id);
+    // Note: DO NOT manually splice PRODUCTS here.
+    // The onSnapshot listener (fbListenProducts) will fire on ALL devices
+    // and rebuild the PRODUCTS array + re-render the grid automatically.
+    console.log('✅ [Real-Time] Firestore delete sent — waiting for onSnapshot to update all devices');
+  } else {
+    // Fallback if Firebase not ready: delete locally only
+    console.warn('⚠️ Firebase not ready — deleting locally only');
+    PRODUCTS = PRODUCTS.filter(p=>p.id!==id);
+    renderAdmin('products');
+    renderProducts(currentCat||'All');
+  }
+}
+
+// ═══════════════════════════════════
+// EDIT PRODUCT (admin: add/replace photos, add per-color photos)
+// ═══════════════════════════════════
+let _editingProductId=null;
+let _editImgData='';
+let _editExtraImages=[];
+let _editColors=[];
+function openEditProduct(id){
+  const p=PRODUCTS.find(x=>x.id===id);
+  if(!p)return;
+  _editingProductId=id;
+  _editImgData=p.img||'';
+  _editExtraImages=Array.isArray(p.images)?p.images.slice():[];
+  _editColors=Array.isArray(p.colors)?p.colors.map(c=>({name:c.name,hex:c.hex,img:c.img||''})):[];
+  renderAdmin('edit-product');
+}
+function renderEditExtraThumbs(){
+  if(!_editExtraImages.length)return '<span style="font-size:11px;color:var(--muted)">Aucune photo supplémentaire</span>';
+  return _editExtraImages.map((im,i)=>`<div style="position:relative;display:inline-block"><img src="${im}" style="width:56px;height:66px;object-fit:cover;border:1px solid var(--border)"><button onclick="removeEditExtraImage(${i})" style="position:absolute;top:-6px;right:-6px;width:18px;height:18px;border-radius:50%;background:var(--red);color:#fff;border:none;font-size:10px;cursor:pointer;line-height:18px">✕</button></div>`).join('');
+}
+function renderEditColorsList(){
+  if(!_editColors.length)return '<span style="font-size:11px;color:var(--muted)">Aucune couleur — ajoutez-en une ci-dessous</span>';
+  return _editColors.map((col,i)=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--cream-border)">
+      <span style="width:22px;height:22px;border-radius:50%;background:${col.hex};border:1px solid rgba(0,0,0,.15);flex-shrink:0"></span>
+      <span style="font-size:12px;font-weight:600;min-width:70px">${col.name}</span>
+      ${col.img?`<img src="${col.img}" style="width:34px;height:40px;object-fit:cover;border:1px solid var(--border)">`:`<span style="font-size:10px;color:var(--muted)">Pas de photo</span>`}
+      <label style="font-size:10px;color:var(--olive-dark);cursor:pointer;text-decoration:underline">${col.img?'Changer':'+ Ajouter'} photo<input type="file" accept="image/*" style="display:none" onchange="setEditColorImage(${i},this)"></label>
+      <button onclick="removeEditColor(${i})" style="margin-left:auto;background:none;border:none;color:var(--red);cursor:pointer;font-size:14px">✕</button>
+    </div>`).join('');
+}
+async function previewEditMainImage(){
+  const file=document.getElementById('ep-main-file').files[0];
+  if(!file)return;
+  const prev=document.getElementById('ep-main-preview');
+  if(prev)prev.innerHTML='<span style="font-size:11px;color:var(--muted)">Compression…</span>';
+  try{
+    _editImgData=await compressImageFile(file,900,0.65);
+    if(prev)prev.innerHTML='<img src="'+_editImgData+'" style="width:70px;height:84px;object-fit:cover;border:1px solid var(--border)">';
+  }catch(err){console.error('❌ compression photo principale:',err);alert('⚠️ Cette photo n\'a pas pu être traitée.');}
+}
+async function previewEditExtraImages(){
+  const files=Array.from(document.getElementById('ep-extra-file').files||[]);
+  for(const file of files){
+    try{ _editExtraImages.push(await compressImageFile(file,900,0.6)); }
+    catch(err){ console.error('❌ compression photo galerie:',err); }
+  }
+  const prev=document.getElementById('ep-extra-preview');
+  if(prev)prev.innerHTML=renderEditExtraThumbs();
+  const fileInput=document.getElementById('ep-extra-file');if(fileInput)fileInput.value='';
+}
+function removeEditExtraImage(i){
+  _editExtraImages.splice(i,1);
+  const prev=document.getElementById('ep-extra-preview');
+  if(prev)prev.innerHTML=renderEditExtraThumbs();
+}
+async function setEditColorImage(i,input){
+  const file=input.files[0];
+  if(!file)return;
+  try{
+    _editColors[i].img=await compressImageFile(file,900,0.6);
+    const list=document.getElementById('ep-colors-list');
+    if(list)list.innerHTML=renderEditColorsList();
+  }catch(err){console.error('❌ compression photo couleur:',err);alert('⚠️ Cette photo n\'a pas pu être traitée.');}
+}
+function removeEditColor(i){
+  _editColors.splice(i,1);
+  const list=document.getElementById('ep-colors-list');
+  if(list)list.innerHTML=renderEditColorsList();
+}
+function addEditColor(){
+  const hex=document.getElementById('ep-color-picker').value;
+  const nameInput=document.getElementById('ep-color-name');
+  const name=nameInput.value.trim()||'Couleur '+(_editColors.length+1);
+  if(_editColors.find(x=>x.hex===hex)){alert('Cette couleur existe déjà.');return;}
+  _editColors.push({name,hex,img:''});
+  nameInput.value='';
+  const list=document.getElementById('ep-colors-list');
+  if(list)list.innerHTML=renderEditColorsList();
+}
+async function saveEditedProduct(){
+  const p=PRODUCTS.find(x=>x.id===_editingProductId);
+  if(!p)return;
+  const name=document.getElementById('ep-name').value.trim()||p.name;
+  const price=parseInt(document.getElementById('ep-price').value)||p.price;
+  const msg=document.getElementById('ep-msg');
+  const updatedP={...p,name,price,img:_editImgData||p.img,images:_editExtraImages.slice(),colors:_editColors.map(c=>({...c}))};
+  const approxSizeBytes=new Blob([JSON.stringify(updatedP)]).size;
+  if(approxSizeBytes>950000){
+    alert('⚠️ Ce produit est trop volumineux pour être enregistré (environ '+Math.round(approxSizeBytes/1024)+' Ko, la limite est ~1000 Ko).\n\nRéduisez le nombre de photos, puis réessayez.');
+    return;
+  }
+  if(window.fbReady && window.fbSaveProduct){
+    const saved=await window.fbSaveProduct(updatedP);
+    if(!saved)return;
+  } else {
+    const idx=PRODUCTS.findIndex(x=>x.id===_editingProductId);
+    if(idx>-1)PRODUCTS[idx]=updatedP;
+    renderProducts();
+  }
+  if(msg){msg.textContent='✓ Produit mis à jour! En cours de synchronisation...';setTimeout(()=>{if(msg)msg.textContent='';},3000);}
+  setTimeout(()=>renderAdmin('products'),600);
+}
+
+// ═══════════════════════════════════
+// AUTO-RECOLOR TOOL (admin: "magic wand" style — recolors only pixels close
+// to the clicked seed color, preserving lightness/shading, leaving the rest
+// of the photo — background, skin, mannequin — untouched). Experimental:
+// works best on photos with a fairly uniform garment color.
+// ═══════════════════════════════════
+function rgbToHsl(r,g,b){
+  r/=255;g/=255;b/=255;
+  const max=Math.max(r,g,b),min=Math.min(r,g,b);
+  let h=0,s=0;const l=(max+min)/2;
+  if(max!==min){
+    const d=max-min;
+    s=l>0.5?d/(2-max-min):d/(max+min);
+    if(max===r)h=(g-b)/d+(g<b?6:0);
+    else if(max===g)h=(b-r)/d+2;
+    else h=(r-g)/d+4;
+    h/=6;
+  }
+  return {h,s,l};
+}
+function hslToRgb(h,s,l){
+  let r,g,b;
+  if(s===0){r=g=b=l;}
+  else{
+    const hue2rgb=(p,q,t)=>{
+      if(t<0)t+=1; if(t>1)t-=1;
+      if(t<1/6)return p+(q-p)*6*t;
+      if(t<1/2)return q;
+      if(t<2/3)return p+(q-p)*(2/3-t)*6;
+      return p;
+    };
+    const q=l<0.5?l*(1+s):l+s-l*s;
+    const p=2*l-q;
+    r=hue2rgb(p,q,h+1/3); g=hue2rgb(p,q,h); b=hue2rgb(p,q,h-1/3);
+  }
+  return {r:Math.round(r*255),g:Math.round(g*255),b:Math.round(b*255)};
+}
+function openAutoRecolorTool(){
+  const p=PRODUCTS.find(x=>x.id===_editingProductId);
+  if(!p)return;
+  const src=_editImgData||p.img;
+  const box=document.getElementById('ep-recolor-tool');
+  box.style.display='block';
+  box.innerHTML=`
+    <div style="font-size:10px;color:var(--muted);margin-bottom:6px">1️⃣ كليكي فوق القماشة فالصورة (النقطة اللي بغيتي تبدلها)</div>
+    <canvas id="ep-recolor-canvas" style="max-width:100%;border:1px solid var(--border);cursor:crosshair;display:block"></canvas>
+    <div id="ep-recolor-controls" style="display:none;margin-top:10px">
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:8px">
+        <label style="font-size:10px;display:flex;align-items:center;gap:5px">2️⃣ اللون: <input type="color" id="ep-recolor-target" value="#d4549a"></label>
+        <label style="font-size:10px;display:flex;align-items:center;gap:5px">دقة الاختيار: <input type="range" id="ep-recolor-tolerance" min="10" max="90" value="40" oninput="document.getElementById('ep-recolor-tol-val').textContent=this.value"><span id="ep-recolor-tol-val">40</span></label>
+      </div>
+      <button type="button" onclick="runAutoRecolor()" style="background:var(--olive-dark);color:#fff;border:none;padding:7px 16px;font-size:10px;cursor:pointer;letter-spacing:1px">3️⃣ Générer l'aperçu</button>
+      <div id="ep-recolor-preview" style="margin-top:10px"></div>
+    </div>`;
+  const img=new Image();
+  img.onload=()=>{
+    const canvas=document.getElementById('ep-recolor-canvas');
+    const maxW=300;
+    const scale=Math.min(1,maxW/img.width);
+    canvas.width=Math.round(img.width*scale);
+    canvas.height=Math.round(img.height*scale);
+    const ctx=canvas.getContext('2d');
+    ctx.drawImage(img,0,0,canvas.width,canvas.height);
+    canvas.onclick=(e)=>{
+      const rect=canvas.getBoundingClientRect();
+      const x=Math.floor((e.clientX-rect.left)*(canvas.width/rect.width));
+      const y=Math.floor((e.clientY-rect.top)*(canvas.height/rect.height));
+      canvas.dataset.seedX=x;canvas.dataset.seedY=y;
+      ctx.drawImage(img,0,0,canvas.width,canvas.height);
+      ctx.strokeStyle='#fff';ctx.lineWidth=2;
+      ctx.beginPath();ctx.arc(x,y,7,0,Math.PI*2);ctx.stroke();
+      ctx.strokeStyle='#000';ctx.lineWidth=1;
+      ctx.beginPath();ctx.arc(x,y,7,0,Math.PI*2);ctx.stroke();
+      document.getElementById('ep-recolor-controls').style.display='block';
+    };
+  };
+  img.onerror=()=>{box.innerHTML='<span style="font-size:11px;color:var(--red)">⚠️ Impossible de charger la photo pour cet outil.</span>';};
+  img.src=src;
+}
+function runAutoRecolor(){
+  const canvas=document.getElementById('ep-recolor-canvas');
+  const x=parseInt(canvas.dataset.seedX), y=parseInt(canvas.dataset.seedY);
+  if(isNaN(x)){alert('كليكي فوق القماشة فالصورة أولاً.');return;}
+  const ctx=canvas.getContext('2d');
+  const imgData=ctx.getImageData(0,0,canvas.width,canvas.height);
+  const data=imgData.data;
+  const seedIdx=(y*canvas.width+x)*4;
+  const seedR=data[seedIdx],seedG=data[seedIdx+1],seedB=data[seedIdx+2];
+  const targetHex=document.getElementById('ep-recolor-target').value;
+  const tr=parseInt(targetHex.slice(1,3),16),tg=parseInt(targetHex.slice(3,5),16),tb=parseInt(targetHex.slice(5,7),16);
+  const targetHsl=rgbToHsl(tr,tg,tb);
+  const tolerance=parseInt(document.getElementById('ep-recolor-tolerance').value);
+  for(let i=0;i<data.length;i+=4){
+    const dr=data[i]-seedR, dg=data[i+1]-seedG, db=data[i+2]-seedB;
+    const dist=Math.sqrt(dr*dr+dg*dg+db*db);
+    if(dist<=tolerance*2.2){
+      const pxHsl=rgbToHsl(data[i],data[i+1],data[i+2]);
+      const newRgb=hslToRgb(targetHsl.h,targetHsl.s,pxHsl.l);
+      data[i]=newRgb.r;data[i+1]=newRgb.g;data[i+2]=newRgb.b;
+    }
+  }
+  ctx.putImageData(imgData,0,0);
+  const dataUrl=canvas.toDataURL('image/jpeg',0.82);
+  window._epRecolorResult=dataUrl;
+  document.getElementById('ep-recolor-preview').innerHTML=`
+    <div style="font-size:10px;color:var(--muted);margin-bottom:6px">النتيجة (شوفيها مليح قبل ما تزيديها):</div>
+    <img src="${dataUrl}" style="max-width:220px;border:1px solid var(--border);display:block;margin-bottom:8px">
+    <input id="ep-recolor-name" style="width:100%;max-width:220px;border:1px solid var(--border);padding:7px 11px;font-size:11px;font-family:inherit;outline:none;margin-bottom:8px;display:block" placeholder="اسم اللون (مثال: Rose)">
+    <button type="button" onclick="saveAutoRecolorAsColor()" style="background:var(--olive-dark);color:#fff;border:none;padding:7px 16px;font-size:10px;cursor:pointer;letter-spacing:1px">✓ زيدي هاذ اللون</button>
+    <button type="button" onclick="runAutoRecolor()" style="background:none;border:1px solid var(--border);padding:7px 12px;font-size:10px;cursor:pointer;letter-spacing:1px;margin-left:6px">↻ Réessayer</button>`;
+}
+function saveAutoRecolorAsColor(){
+  const nameInput=document.getElementById('ep-recolor-name');
+  const name=(nameInput&&nameInput.value.trim())||'Couleur '+(_editColors.length+1);
+  const hex=document.getElementById('ep-recolor-target').value;
+  const img=window._epRecolorResult;
+  if(!img)return;
+  _editColors.push({name,hex,img});
+  const list=document.getElementById('ep-colors-list');
+  if(list)list.innerHTML=renderEditColorsList();
+  document.getElementById('ep-recolor-tool').style.display='none';
+  document.getElementById('ep-recolor-tool').innerHTML='';
+}
+
+document.addEventListener('DOMContentLoaded',function(){
+  // Set hero images from product photos
+  const h1=document.getElementById('hero-img-1');
+  const h2=document.getElementById('hero-img-2');
+  if(h1&&PRODUCTS[0])h1.src=PRODUCTS[0].img;
+  if(h2&&PRODUCTS[4])h2.src=PRODUCTS[4].img;
+  document.getElementById('prod-modal').addEventListener('click',function(e){if(e.target===this)closeProdModal();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeImgLightbox();});
+  document.querySelectorAll('.popup-overlay').forEach(el=>el.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');}));
+  // Auto-enter as guest — no login required
+  enterSite({name:'Visiteur',email:'',isOwner:false,source:'guest',avatar:''});
+  // Restore cart badge count from persisted cart (loaded via loadCart() at script start)
+  updateCount();
+  // Check URL hash for admin access
+  if(window.location.hash==='#admin'){openAdminLogin();}
+  // Also keyboard shortcut: Ctrl+Shift+A
+  document.addEventListener('keydown',function(e){
+    if(e.ctrlKey&&e.shiftKey&&e.key==='A'){e.preventDefault();openAdminLogin();}
+  });
+});
+</script>
+
+<!-- FORGOT PASSWORD PANEL -->
+<div id="forgot-panel" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:10000;align-items:center;justify-content:center">
+  <div style="background:#fff;padding:32px 28px;width:min(92vw,400px);border-top:5px solid #d4549a;border-radius:2px;box-shadow:0 20px 60px rgba(0,0,0,.5)">
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="font-size:28px;margin-bottom:8px">🔑</div>
+      <div style="font-family:'Montserrat',sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#d4549a">Récupération</div>
+      <div style="font-size:13px;color:#555;margin-top:6px">Recevoir le code de récupération par Email</div>
+    </div>
+
+    <!-- Step 1: Enter email -->
+    <div id="forgot-step1">
+      <div style="font-size:10px;color:#888;margin-bottom:6px;letter-spacing:1px">EMAIL ADMIN</div>
+      <input id="forgot-phone" type="email" placeholder="votre@email.com" maxlength="100"
+        style="width:100%;border:1.5px solid #d4549a;padding:12px 14px;font-size:14px;font-family:'Montserrat',sans-serif;outline:none;margin-bottom:10px;box-sizing:border-box;border-radius:1px"
+        onkeydown="if(event.key==='Enter')sendRecoveryCode()">
+      <div style="font-size:10px;color:#aaa;margin-bottom:14px">📧 Le code sera envoyé à votre email admin</div>
+      <button onclick="sendRecoveryCode()" style="width:100%;background:linear-gradient(135deg,#d4549a,#3a7bd5);color:#fff;border:none;padding:13px;font-size:10px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;font-family:'Montserrat',sans-serif;margin-bottom:10px">Envoyer le code</button>
+      <div id="forgot-err1" style="color:#e55;font-size:11px;min-height:16px;text-align:center"></div>
+    </div>
+
+    <!-- Step 2: Enter code received by WhatsApp -->
+    <div id="forgot-step2" style="display:none">
+      <div style="background:#e8f5e9;border:1px solid #a5d6a7;padding:12px;margin-bottom:16px;border-radius:2px;font-size:12px;color:#2e7d32;text-align:center">
+        ✅ Code envoyé sur votre email !<br>Vérifiez votre boîte mail (et spam).
+      </div>
+      <div style="font-size:10px;color:#888;margin-bottom:6px;letter-spacing:1px">CODE DE VÉRIFICATION (4 chiffres)</div>
+      <input id="forgot-code-input" type="number" placeholder="XXXX" maxlength="4"
+        style="width:100%;border:1.5px solid #d4549a;padding:12px 14px;font-size:20px;font-family:'Montserrat',sans-serif;outline:none;margin-bottom:10px;box-sizing:border-box;border-radius:1px;text-align:center;letter-spacing:8px"
+        onkeydown="if(event.key==='Enter')verifyRecoveryCode()">
+      <button onclick="verifyRecoveryCode()" style="width:100%;background:linear-gradient(135deg,#d4549a,#3a7bd5);color:#fff;border:none;padding:13px;font-size:10px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;font-family:'Montserrat',sans-serif;margin-bottom:10px">Vérifier le code</button>
+      <div id="forgot-err2" style="color:#e55;font-size:11px;min-height:16px;text-align:center"></div>
+      <div style="text-align:center;margin-top:6px">
+        <a onclick="document.getElementById('forgot-step2').style.display='none';document.getElementById('forgot-step1').style.display='block'" style="font-size:11px;color:#aaa;cursor:pointer">← Retour</a>
+      </div>
+    </div>
+
+    <!-- Step 3: Set new password -->
+    <div id="forgot-step3" style="display:none">
+      <div style="background:#e8f5e9;border:1px solid #a5d6a7;padding:12px;margin-bottom:16px;border-radius:2px;font-size:12px;color:#2e7d32;text-align:center">
+        ✅ Code vérifié avec succès !
+      </div>
+      <div style="font-size:10px;color:#888;margin-bottom:6px;letter-spacing:1px">NOUVEAU MOT DE PASSE</div>
+      <input id="forgot-newpass" type="password" placeholder="Nouveau mot de passe"
+        style="width:100%;border:1.5px solid #d4549a;padding:12px 14px;font-size:13px;font-family:'Montserrat',sans-serif;outline:none;margin-bottom:10px;box-sizing:border-box;border-radius:1px">
+      <input id="forgot-newpass2" type="password" placeholder="Confirmer mot de passe"
+        style="width:100%;border:1px solid #ddd;padding:12px 14px;font-size:13px;font-family:'Montserrat',sans-serif;outline:none;margin-bottom:14px;box-sizing:border-box;border-radius:1px"
+        onkeydown="if(event.key==='Enter')setNewPassword()">
+      <button onclick="setNewPassword()" style="width:100%;background:linear-gradient(135deg,#2e7d32,#1565c0);color:#fff;border:none;padding:13px;font-size:10px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;font-family:'Montserrat',sans-serif;margin-bottom:10px">Changer le mot de passe</button>
+      <div id="forgot-err3" style="color:#e55;font-size:11px;min-height:16px;text-align:center"></div>
+    </div>
+
+    <button onclick="closeForgotPanel()" style="width:100%;background:none;border:1px solid #eee;padding:10px;cursor:pointer;font-size:12px;color:#aaa;font-family:'Montserrat',sans-serif;margin-top:4px">✕ Fermer</button>
+  </div>
+</div>
+
+<!-- ADMIN LOGIN POPUP (outside all containers) -->
+<div id="admin-login-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:9999;align-items:center;justify-content:center;flex-direction:column">
+  <div style="background:#fff;padding:36px;width:360px;border-top:5px solid #d4549a;border-radius:2px;box-shadow:0 20px 60px rgba(0,0,0,.4)">
+    <div style="text-align:center;margin-bottom:24px">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:22px;color:#1a1a1a">ILA <span style="color:#d4549a">Admin</span></div>
+      <div style="font-size:10px;letter-spacing:3px;color:#999;margin-top:4px;text-transform:uppercase">Espace Propriétaire</div>
+    </div>
+    <input id="admin-login-email" style="width:100%;border:1px solid #ddd;padding:12px 14px;font-size:16px;font-family:'Montserrat',sans-serif;outline:none;margin-bottom:10px;box-sizing:border-box;border-radius:1px" placeholder="Email" type="email" onkeydown="if(event.key==='Enter')document.getElementById('admin-login-pass').focus()">
+    <input id="admin-login-pass" style="width:100%;border:1px solid #ddd;padding:12px 14px;font-size:16px;font-family:'Montserrat',sans-serif;outline:none;margin-bottom:8px;box-sizing:border-box;border-radius:1px" placeholder="Mot de passe" type="password" onkeydown="if(event.key==='Enter')doAdminLogin()">
+    <div id="admin-login-err" style="color:#e55;font-size:11px;margin-bottom:10px;min-height:16px"></div>
+    <button onclick="doAdminLogin()" style="width:100%;background:linear-gradient(135deg,#d4549a,#3a7bd5);color:#fff;border:none;padding:13px;font-size:10px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;font-family:'Montserrat',sans-serif;margin-bottom:10px">Connexion Admin</button>
+    <button onclick="document.getElementById('admin-login-overlay').style.display='none'" style="width:100%;background:none;border:1px solid #ddd;padding:10px;cursor:pointer;font-size:12px;color:#999;font-family:'Montserrat',sans-serif;margin-bottom:10px">Annuler</button>
+    <div style="text-align:center">
+      <a onclick="showForgotPanel()" style="font-size:11px;color:#d4549a;cursor:pointer;text-decoration:underline;font-family:'Montserrat',sans-serif">🔑 Mot de passe oublié ?</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>
